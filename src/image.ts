@@ -2,7 +2,7 @@ import * as wasm from "wasm-rust-image";
 
 type Filter = "Nearest" | "Triangle" | "CatmullRom" | "Gaussian" | "Lanczos3";
 
-export class WasmImage {
+export default class WasmImage {
   constructor() {}
 
   private currentImage: Uint8Array;
