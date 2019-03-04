@@ -2,10 +2,11 @@
   "name": "wasm-image",
   "version": "0.1.0",
   "description": " an image manipulation wrapper, JS API for Rust image",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc:watch": "tsc --watch"
+    "tsc:watch": "tsc --watch",
+    "make": "cd rust-image-wrapper && wasm-pack build && cd .. && tsc && webpack"
   },
   "repository": {
     "type": "git",
@@ -41,7 +42,9 @@
     "prettier": "^1.16.4",
     "tslint": "^5.13.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
   },
   "dependencies": {
     "wasm-rust-image": "file:rust-image-wrapper/pkg"

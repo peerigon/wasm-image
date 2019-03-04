@@ -3,9 +3,9 @@
     "target": "es6",
     "module": "commonjs",
     "allowJs": true,
-    "lib": ["es5", "es6", "es2017", "es2018"],
+    "lib": ["es5", "es6", "es2017", "es2018", "dom"],
     "rootDir": "src/",
-    "outDir": "./dist",
+    "outDir": "./ts-dist",
     "downlevelIteration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
@@ -22,6 +22,6 @@
     "baseUrl": "/",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "ts-dist"]
 }

@@ -1,1 +1,0 @@
-{"rustc":15024460265615607847,"features":"[]","target":13736690210164435361,"profile":16469432291020520218,"path":7695388918917109811,"deps":[["cfg-if v0.1.6","cfg_if",2397251402519465803],["wasm-bindgen v0.2.37","wasm_bindgen",3939195758986404340]],"local":[{"Precalculated":"0.1.6"}],"rustflags":[],"edition":"Edition2015"}
