@@ -1,0 +1,11 @@
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/libsafe_transmute-b4b7a36b04b129ec.rlib: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/pod.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/bool.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/error.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/to_bytes.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/util.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/guard.rs
+
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/safe_transmute-b4b7a36b04b129ec.d: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/pod.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/bool.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/error.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/to_bytes.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/util.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/guard.rs
+
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/lib.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/pod.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/bool.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/error.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/to_bytes.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/util.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/safe-transmute-0.10.1/src/guard.rs:

@@ -1,0 +1,14 @@
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/libpng-83878218f0c83dee.rlib: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/chunk.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/crc.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/mod.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/stream.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/encoder.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/filter.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/traits.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/common.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/utils.rs
+
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/png-83878218f0c83dee.d: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/chunk.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/crc.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/mod.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/stream.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/encoder.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/filter.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/traits.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/common.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/utils.rs
+
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/lib.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/chunk.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/crc.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/mod.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/decoder/stream.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/encoder.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/filter.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/traits.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/common.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/png-0.14.0/src/utils.rs:

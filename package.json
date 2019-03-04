@@ -1,0 +1,49 @@
+{
+  "name": "wasm-image",
+  "version": "0.1.0",
+  "description": " an image manipulation wrapper, JS API for Rust image",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tsc:watch": "tsc --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peerigon/wasm-image.git"
+  },
+  "keywords": [
+    "image",
+    "wasm",
+    "rust",
+    "typescript"
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/src/**/*.{ts,tsx,css}": [
+      "tslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "author": "Peerigon GmbH",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/peerigon/wasm-image/issues"
+  },
+  "homepage": "https://github.com/peerigon/wasm-image#readme",
+  "devDependencies": {
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.5",
+    "prettier": "^1.16.4",
+    "tslint": "^5.13.1",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "wasm-rust-image": "file:rust-image-wrapper/pkg"
+  }
+}

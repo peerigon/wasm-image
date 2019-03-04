@@ -1,0 +1,11 @@
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/libarrayvec-072679576bc57c7d.rlib: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/maybe_uninit.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array_string.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/char.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/range.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/errors.rs
+
+/home/acidicx/peerigon/git/wasm-image/rust-image-wrapper/target/wasm32-unknown-unknown/release/deps/arrayvec-072679576bc57c7d.d: /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/lib.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/maybe_uninit.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array_string.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/char.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/range.rs /home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/errors.rs
+
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/lib.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/maybe_uninit.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/array_string.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/char.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/range.rs:
+/home/acidicx/.cargo/registry/src/github.com-1ecc6299db9ec823/arrayvec-0.4.10/src/errors.rs:
