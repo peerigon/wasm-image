@@ -2,7 +2,7 @@
   "name": "wasm-image",
   "version": "0.1.0",
   "description": " an image manipulation wrapper, JS API for Rust image",
-  "main": "dist/index.js",
+  "main": "dist/image.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc:watch": "tsc --watch",
@@ -48,5 +48,6 @@
   },
   "dependencies": {
     "wasm-rust-image": "file:rust-image-wrapper/pkg"
-  }
+  },
+  "types": "types/image.d.ts"
 }

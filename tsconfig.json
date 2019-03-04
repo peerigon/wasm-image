@@ -2,11 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "allowJs": true,
     "lib": ["es5", "es6", "es2017", "es2018", "dom"],
     "rootDir": "src/",
     "outDir": "./ts-dist",
     "downlevelIteration": true,
+    "declaration": true,
+    "declarationDir": "types/",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "moduleResolution": "node",

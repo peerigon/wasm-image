@@ -15,7 +15,15 @@ export default class WasmImage {
     return this.currentImage;
   }
 
+  private checkImage() {
+    if (!this.currentImage) {
+      throw new Error("no image set!");
+    }
+  }
+
   public rotate(deg: 90 | 180 | 270) {
+    this.checkImage();
+
     switch (deg) {
       case 90:
         this.currentImage = wasm.rotate(this.currentImage, 90);
@@ -29,6 +37,8 @@ export default class WasmImage {
   }
 
   public resize(width: number, height: number, filter: Filter, aspectRatio: "preserve" | "mangle" = "preserve") {
+    this.checkImage();
+
     const filterMap = {
       Nearest: 0,
       Lanczos3: 1,
@@ -36,6 +46,7 @@ export default class WasmImage {
       CatmullRom: 3,
       Triangle: 4,
     };
+
     this.currentImage = wasm.resize(this.currentImage, width, height, filterMap[filter], aspectRatio === "preserve");
   }
 }
