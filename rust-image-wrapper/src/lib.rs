@@ -84,12 +84,89 @@ pub fn rotate(_array: &[u8], _deg: u16) -> Vec<u8> {
 }
 
 #[wasm_bindgen]
+pub fn grayscale(_array: &[u8]) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.grayscale();
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn invert(_array: &[u8]) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img.invert();
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn blur(_array: &[u8], _sigma: f32) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.blur(_sigma);
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn unsharpen(_array: &[u8], _sigma: f32, _threshold: i32) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.unsharpen(_sigma, _threshold);
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn adjust_contrast(_array: &[u8], _contrast: f32) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.adjust_contrast(_contrast);
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn brighten(_array: &[u8], _value: i32) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.brighten(_value);
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn hue_rotate(_array: &[u8], _value: i32) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = img.huerotate(_value);
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn flip(_array: &[u8], _axis: u8) -> Vec<u8> {
+    let mut img = load_image_from_array(_array);
+    img = match _axis {
+        0 => img.fliph(),
+        1 => img.flipv(),
+        _ => img,
+    };
+    return get_image_as_array(img);
+}
+
+#[wasm_bindgen]
+pub fn crop(
+    _array: &[u8],
+    _start_x: u32,
+    _start_y: u32,
+    _end_x: u32,
+    _end_y: u32,
+) -> Vec<u8> {
+    log!("Received buffer");
+    let mut img = load_image_from_array(_array);
+    img = img.crop(_start_x, _start_y, _end_x, _end_y);
+    return get_image_as_array(img);
+}
+
+
+#[wasm_bindgen]
 pub fn resize(
     _array: &[u8],
     _width: u32,
     _height: u32,
     _filter: u8,
     _aspect_ratio_preserve: bool,
+    _fill: bool,
+    _as_thumbnail: bool,
 ) -> Vec<u8> {
     log!("Received buffer");
 
@@ -112,9 +189,21 @@ pub fn resize(
     };
 
     if _aspect_ratio_preserve {
-        img = img.resize(_width, _height, _checked_filter);
+        if _as_thumbnail {
+            img = img.thumbnail(_width, _height);
+        } else {
+            if _fill {
+                img = img.resize_to_fill(_width, _height, _checked_filter);
+            } else {
+                img = img.resize(_width, _height, _checked_filter);
+            }
+        }
     } else {
-        img = img.resize_exact(_width, _height, _checked_filter);
+        if _as_thumbnail {
+            img = img.thumbnail_exact(_width, _height);
+        } else {
+            img = img.resize_exact(_width, _height, _checked_filter);
+        }
     };
 
     log!("Sends array back");
