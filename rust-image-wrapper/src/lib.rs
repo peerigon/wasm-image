@@ -66,6 +66,7 @@ fn get_image_as_array(_img: DynamicImage) -> Vec<u8> {
     let mut out = Vec::new();
     c.read_to_end(&mut out).unwrap();
 
+    log!("Sends array back");
     return out;
 }
 
@@ -102,14 +103,7 @@ pub fn resize(
         _ => image::FilterType::Nearest,
     };
 
-    let mut img: DynamicImage = match image::load_from_memory_with_format(_array, ImageFormat::PNG)
-    {
-        Ok(img) => img,
-        Err(error) => {
-            log!("There was a problem opening the file: {:?}", error);
-            panic!("There was a problem opening the file: {:?}", error)
-        }
-    };
+    let mut img = load_image_from_array(_array);
 
     if _aspect_ratio_preserve {
         img = img.resize(_width, _height, _checked_filter);
@@ -117,6 +111,5 @@ pub fn resize(
         img = img.resize_exact(_width, _height, _checked_filter);
     };
 
-    log!("Sends array back");
     return get_image_as_array(img);
 ;}
