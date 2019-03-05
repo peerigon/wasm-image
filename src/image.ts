@@ -2,7 +2,7 @@ import * as wasm from "wasm-rust-image";
 
 type Filter = "Nearest" | "Triangle" | "CatmullRom" | "Gaussian" | "Lanczos3";
 
-export default class WasmImage {
+export class WasmImage {
   constructor() {}
 
   private currentImage: Uint8Array;
@@ -21,22 +21,18 @@ export default class WasmImage {
     }
   }
 
-  public rotate(deg: 90 | 180 | 270) {
+  public async rotate(deg: 90 | 180 | 270) {
     this.checkImage();
 
-    switch (deg) {
-      case 90:
-        this.currentImage = wasm.rotate(this.currentImage, 90);
-      case 180:
-        this.currentImage = wasm.rotate(this.currentImage, 180);
-      case 270:
-        this.currentImage = wasm.rotate(this.currentImage, 270);
-      default:
-        throw new Error("invalid rotation degree (must be 90, 180 or 270)");
+    if ([90, 180, 270].includes(deg)) {
+      this.currentImage = await wasm.rotate(this.currentImage, deg);
+      return;
     }
+
+    throw new Error("invalid rotation degree (must be 90, 180 or 270)");
   }
 
-  public resize(width: number, height: number, filter: Filter, aspectRatio: "preserve" | "mangle" = "preserve") {
+  public async resize(width: number, height: number, filter: Filter, aspectRatio: "preserve" | "mangle" = "preserve") {
     this.checkImage();
 
     const filterMap = {
@@ -47,6 +43,6 @@ export default class WasmImage {
       Triangle: 4,
     };
 
-    this.currentImage = wasm.resize(this.currentImage, width, height, filterMap[filter], aspectRatio === "preserve");
+    this.currentImage = await wasm.resize(this.currentImage, width, height, filterMap[filter], aspectRatio === "preserve");
   }
 }
