@@ -1,10 +1,10 @@
 extern crate cfg_if;
 extern crate image;
 extern crate wasm_bindgen;
+extern crate console_error_panic_hook;
 
 use std::io::{Cursor, Read, Seek, SeekFrom};
-
-mod utils;
+use std::panic;
 
 use cfg_if::cfg_if;
 use image::DynamicImage;
@@ -31,6 +31,7 @@ extern "C" {
 }
 
 fn load_image_from_array(_array: &[u8]) -> DynamicImage {
+    panic::set_hook(Box::new(console_error_panic_hook::hook));
     let img = match image::load_from_memory(_array) {
         Ok(img) => img,
         Err(error) => {
