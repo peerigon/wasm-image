@@ -1,6 +1,5 @@
 extern crate cfg_if;
 extern crate image;
-extern crate thread_local;
 extern crate wasm_bindgen;
 
 use std::io::{Cursor, Read, Seek, SeekFrom};
@@ -9,7 +8,6 @@ mod utils;
 
 use cfg_if::cfg_if;
 use image::DynamicImage;
-use image::GenericImageView;
 use image::ImageFormat;
 use std::str;
 use wasm_bindgen::prelude::*;
@@ -33,7 +31,7 @@ extern "C" {
 }
 
 fn load_image_from_array(_array: &[u8]) -> DynamicImage {
-    let img = match image::load_from_memory_with_format(_array, ImageFormat::PNG) {
+    let img = match image::load_from_memory(_array) {
         Ok(img) => img,
         Err(error) => {
             log!("There was a problem opening the file: {:?}", error);
@@ -145,19 +143,12 @@ pub fn flip(_array: &[u8], _axis: u8) -> Vec<u8> {
 }
 
 #[wasm_bindgen]
-pub fn crop(
-    _array: &[u8],
-    _start_x: u32,
-    _start_y: u32,
-    _end_x: u32,
-    _end_y: u32,
-) -> Vec<u8> {
+pub fn crop(_array: &[u8], _start_x: u32, _start_y: u32, _end_x: u32, _end_y: u32) -> Vec<u8> {
     log!("Received buffer");
     let mut img = load_image_from_array(_array);
     img = img.crop(_start_x, _start_y, _end_x, _end_y);
     return get_image_as_array(img);
 }
-
 
 #[wasm_bindgen]
 pub fn resize(
