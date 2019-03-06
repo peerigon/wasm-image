@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "paths": { "*": ["types/*"] },
     "target": "es6",
     "module": "esnext",
     "lib": ["es5", "es6", "es2017", "es2018", "dom"],
@@ -21,8 +22,9 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": false,
     "baseUrl": "/",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/__test__"]
 }
