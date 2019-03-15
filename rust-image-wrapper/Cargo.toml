@@ -18,7 +18,8 @@ features = [
 [dependencies]
 cfg-if = "0.1.2"
 wasm-bindgen = "0.2"
-image = "*"
+# this disables rayon in the jpeg decoder, otherwise it breaks in WASM
+image = { version = "0.21.0", default-features = false, features = ["jpeg"] }
 console_error_panic_hook = "0.1.6"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
