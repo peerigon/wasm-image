@@ -26,5 +26,9 @@
     "esModuleInterop": true
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "**/__test__"]
+  "exclude": ["node_modules", "dist", "**/__test__"],
+  "typedocOptions": {
+    "mode": "modules",
+    "out": "docs"
+  }
 }
