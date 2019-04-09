@@ -25,7 +25,7 @@ const WasmImg = new WasmImage();
 WasmImg.setImage(new Uint8Array(buffer));
 ```
 
-Note: you can convert a file into a conforming buffer like this
+Note: you can convert a file into a conforming buffer like this:
 
 <details>
 
@@ -64,9 +64,17 @@ Afterwards you can retrieve your image from WebAssembly:
 const modifiedImage: Uint8Array = await WasmImg.getImage();
 ```
 
+## Supported image operations
+Please check our [docs](https://peerigon.github.io/wasm-image/) for all available image processing functions.
+
 ## Limitations
 
-The Rust library used for this project is [image](https://github.com/PistonDevelopers/image). All limitations that are mentioned for this library are obviously also valid for this WASM wrapper. Please make sure you read the [list of supported image formts](https://github.com/PistonDevelopers/image#2-supported-image-formats).
+The Rust library used for this project is [image](https://github.com/PistonDevelopers/image). All limitations that are mentioned for this library are obviously also valid for this WASM wrapper.
+
+Please make sure you read the [list of supported image formts](https://github.com/PistonDevelopers/image#2-supported-image-formats).
+
+### WARNING
+The package currently only supports PNG, the rest is a work in progress.
 
 ## License
 
