@@ -2,6 +2,8 @@
 
 blazing fast image processing in WebAssembly
 
+:warning: Please check the limitations. This is still a work in progress!
+
 ## Install
 
 ```bash

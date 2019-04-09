@@ -60,14 +60,9 @@ typings/
 # next.js build output
 .next
 
-# dist folders
-dist/
-ts-dist/
-
 # WASM/Rust
 target/
 **/*.rs.bk
-Cargo.lock
 bin/
 pkg/
 wasm-pack.log
