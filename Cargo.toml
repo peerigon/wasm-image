@@ -1,8 +1,8 @@
 [package]
 name = "wasm-image"
-version = "0.1.0"
-authors = ["Johannes Ewald <johannes.ewald@peerigon.com>"]
-edition = "2018"
+version = "1.0.0"
+authors = ["Peerigon GmbH <hello@peerigon.com>"]
+description = "⚡️ Blazing fast image manipulation powered by WebAssembly"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
