@@ -1,30 +1,14 @@
 {
-  "name": "wasm-image",
-  "version": "1.0.0",
-  "description": "⚡️ Blazing fast image manipulation powered by WebAssembly",
-  "main": "index.js",
-  "directories": {
-    "test": "tests"
-  },
+  "name": "wasm-image-test",
+  "private": true,
+  "version": "0.0.0",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/peerigon/wasm-image.git"
-  },
-  "keywords": [
-    "image",
-    "manipulation",
-    "transform",
-    "wasm",
-    "web",
-    "assembly"
-  ],
-  "author": "Peerigon GmbH <hello@peerigon.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/peerigon/wasm-image/issues"
-  },
-  "homepage": "https://github.com/peerigon/wasm-image#readme"
+  "devDependencies": {
+    "@types/jest": "^26.0.19",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.3"
+  }
 }
