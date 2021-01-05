@@ -18,7 +18,7 @@ crate-type = ["cdylib", "rlib"]
 default = ["console_error_panic_hook"]
 
 [dependencies]
-image = "0.23.12"
+image = {version = "0.23.12", default-features = false, features = ["png", "jpeg", "gif", "webp", "tiff", "bmp", "ico", "avif"]}
 js-sys = "0.3.46"
 wasm-bindgen = "0.2.69"
 

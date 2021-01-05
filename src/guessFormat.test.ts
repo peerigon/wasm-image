@@ -8,7 +8,7 @@ describe("guessFormat()", () => {
 
   test("Detects jpg", async () => {
     const buffers = await Promise.all([
-      images.catJpg()
+      images.readCatJpg()
     ]);
 
     buffers.forEach(expectFormat(WasmImageFormat.Jpeg));
@@ -16,8 +16,8 @@ describe("guessFormat()", () => {
 
   test("Detects png", async () => {
     const buffers = await Promise.all([
-      images.ballPng(),
-      images.basi2c08Png()
+      images.readBallPng(),
+      images.readBasi2c08Png()
     ]);
 
     buffers.forEach(expectFormat(WasmImageFormat.Png));

@@ -1,4 +1,4 @@
-use image::{io::Reader, DynamicImage, ImageError, ImageFormat};
+use image::{io::Reader, DynamicImage, ImageError, ImageFormat, ImageOutputFormat};
 use js_sys::Error as JsError;
 use std::{
     convert::{TryFrom, TryInto},
@@ -12,51 +12,60 @@ use wasm_bindgen::prelude::*;
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
-#[wasm_bindgen]
-pub struct WasmImage {
-    dynamic_image: DynamicImage,
-}
-
 // Enums are not properly translated into TypeScript :(
 // https://github.com/rustwasm/wasm-bindgen/issues/2154
 #[wasm_bindgen]
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub enum WasmImageFormat {
+    // #[cfg(feature = "png")]
     /// An Image in PNG Format
     Png,
 
+    // #[cfg(feature = "jpeg")]
     /// An Image in JPEG Format
     Jpeg,
 
+    // #[cfg(feature = "gif")]
     /// An Image in GIF Format
     Gif,
 
+    // #[cfg(feature = "webp")]
     /// An Image in WEBP Format
     WebP,
 
-    /// An Image in general PNM Format
-    Pnm,
+    // #[cfg(feature = "pnm")]
+    // /// An Image in general PNM Format
+    // Pnm,
 
+    // #[cfg(feature = "tiff")]
     /// An Image in TIFF Format
     Tiff,
 
-    /// An Image in TGA Format
-    Tga,
+    // #[cfg(feature = "tga")]
+    // /// An Image in TGA Format
+    // Tga,
 
-    /// An Image in DDS Format
-    Dds,
+    // #[cfg(feature = "dds")]
+    // /// An Image in DDS Format
+    // Dds,
 
+    // #[cfg(feature = "bmp")]
     /// An Image in BMP Format
     Bmp,
 
+    // #[cfg(feature = "ico")]
     /// An Image in ICO Format
     Ico,
 
-    /// An Image in Radiance HDR Format
-    Hdr,
+    // #[cfg(feature = "hdr")]
+    // /// An Image in Radiance HDR Format
+    // Hdr,
 
-    /// An Image in farbfeld Format
-    Farbfeld,
+    // #[cfg(feature = "farbfeld")]
+    // /// An Image in farbfeld Format
+    // Farbfeld,
 
+    // #[cfg(feature = "avif")]
     /// An Image in AVIF format.
     Avif,
 }
@@ -66,18 +75,31 @@ impl TryFrom<WasmImageFormat> for ImageFormat {
 
     fn try_from(wasm_image_format: WasmImageFormat) -> Result<Self, Self::Error> {
         match wasm_image_format {
+            // #[cfg(feature = "png")]
             WasmImageFormat::Png => Ok(ImageFormat::Png),
+            // #[cfg(feature = "jpeg")]
             WasmImageFormat::Jpeg => Ok(ImageFormat::Jpeg),
+            // #[cfg(feature = "gif")]
             WasmImageFormat::Gif => Ok(ImageFormat::Gif),
+            // #[cfg(feature = "webp")]
             WasmImageFormat::WebP => Ok(ImageFormat::WebP),
-            WasmImageFormat::Pnm => Ok(ImageFormat::Pnm),
+            // #[cfg(feature = "pnm")]
+            // WasmImageFormat::Pnm => Ok(ImageFormat::Pnm),
+            // #[cfg(feature = "tiff")]
             WasmImageFormat::Tiff => Ok(ImageFormat::Tiff),
-            WasmImageFormat::Tga => Ok(ImageFormat::Tga),
-            WasmImageFormat::Dds => Ok(ImageFormat::Dds),
+            // #[cfg(feature = "tga")]
+            // WasmImageFormat::Tga => Ok(ImageFormat::Tga),
+            // #[cfg(feature = "dds")]
+            // WasmImageFormat::Dds => Ok(ImageFormat::Dds),
+            // #[cfg(feature = "bmp")]
             WasmImageFormat::Bmp => Ok(ImageFormat::Bmp),
+            // #[cfg(feature = "ico")]
             WasmImageFormat::Ico => Ok(ImageFormat::Ico),
-            WasmImageFormat::Hdr => Ok(ImageFormat::Hdr),
-            WasmImageFormat::Farbfeld => Ok(ImageFormat::Farbfeld),
+            // #[cfg(feature = "hdr")]
+            // WasmImageFormat::Hdr => Ok(ImageFormat::Hdr),
+            // #[cfg(feature = "farbfeld")]
+            // WasmImageFormat::Farbfeld => Ok(ImageFormat::Farbfeld),
+            // #[cfg(feature = "avif")]
             WasmImageFormat::Avif => Ok(ImageFormat::Avif),
             #[allow(unreachable_patterns)]
             _ => Err("Unsupported image format"),
@@ -90,19 +112,139 @@ impl TryFrom<ImageFormat> for WasmImageFormat {
 
     fn try_from(image_format: ImageFormat) -> Result<Self, Self::Error> {
         match image_format {
+            // #[cfg(feature = "png")]
             ImageFormat::Png => Ok(WasmImageFormat::Png),
+            // #[cfg(feature = "jpeg")]
             ImageFormat::Jpeg => Ok(WasmImageFormat::Jpeg),
+            // #[cfg(feature = "gif")]
             ImageFormat::Gif => Ok(WasmImageFormat::Gif),
+            // #[cfg(feature = "webp")]
             ImageFormat::WebP => Ok(WasmImageFormat::WebP),
-            ImageFormat::Pnm => Ok(WasmImageFormat::Pnm),
+            // #[cfg(feature = "pnm")]
+            // ImageFormat::Pnm => Ok(WasmImageFormat::Pnm),
+            // #[cfg(feature = "tiff")]
             ImageFormat::Tiff => Ok(WasmImageFormat::Tiff),
-            ImageFormat::Tga => Ok(WasmImageFormat::Tga),
-            ImageFormat::Dds => Ok(WasmImageFormat::Dds),
+            // #[cfg(feature = "tga")]
+            // ImageFormat::Tga => Ok(WasmImageFormat::Tga),
+            // #[cfg(feature = "dds")]
+            // ImageFormat::Dds => Ok(WasmImageFormat::Dds),
+            // #[cfg(feature = "bmp")]
             ImageFormat::Bmp => Ok(WasmImageFormat::Bmp),
+            // #[cfg(feature = "ico")]
             ImageFormat::Ico => Ok(WasmImageFormat::Ico),
-            ImageFormat::Hdr => Ok(WasmImageFormat::Hdr),
-            ImageFormat::Farbfeld => Ok(WasmImageFormat::Farbfeld),
+            // #[cfg(feature = "hdr")]
+            // ImageFormat::Hdr => Ok(WasmImageFormat::Hdr),
+            // #[cfg(feature = "farbfeld")]
+            // ImageFormat::Farbfeld => Ok(WasmImageFormat::Farbfeld),
+            // #[cfg(feature = "avif")]
             ImageFormat::Avif => Ok(WasmImageFormat::Avif),
+            #[allow(unreachable_patterns)]
+            _ => Err("Unsupported image format"),
+        }
+    }
+}
+
+// ⚠️ Caution: Changing the source order of the enums
+// here influences the TypeScript enum numbers generated by wasm_bindgen
+// You also need to update the FormatOptions in DynamicImages.ts accordingly
+#[wasm_bindgen]
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub enum WasmImageOutputFormat {
+    // #[cfg(feature = "png")]
+    /// An Image in PNG Format
+    Png,
+
+    // #[cfg(feature = "jpeg")]
+    /// An Image in JPEG Format with specified quality
+    Jpeg,
+
+    // #[cfg(feature = "pnm")]
+    // /// An Image in one of the PNM Formats
+    // Pnm(PNMSubtype),
+
+    // #[cfg(feature = "gif")]
+    /// An Image in GIF Format
+    Gif,
+
+    // #[cfg(feature = "ico")]
+    /// An Image in ICO Format
+    Ico,
+
+    // #[cfg(feature = "bmp")]
+    /// An Image in BMP Format
+    Bmp,
+
+    // #[cfg(feature = "farbfeld")]
+    // /// An Image in farbfeld Format
+    // Farbfeld,
+
+    // #[cfg(feature = "tga")]
+    // /// An Image in TGA Format
+    // Tga,
+
+    // #[cfg(feature = "avif")]
+    /// An image in AVIF Format
+    Avif,
+}
+
+impl TryFrom<WasmImageOutputFormat> for ImageOutputFormat {
+    type Error = &'static str;
+
+    fn try_from(wasm_image_format: WasmImageOutputFormat) -> Result<Self, Self::Error> {
+        match wasm_image_format {
+            // #[cfg(feature = "png")]
+            WasmImageOutputFormat::Png => Ok(ImageOutputFormat::Png),
+            // #[cfg(feature = "jpeg")]
+            WasmImageOutputFormat::Jpeg => Ok(ImageOutputFormat::Jpeg(75)),
+            // #[cfg(feature = "gif")]
+            WasmImageOutputFormat::Gif => Ok(ImageOutputFormat::Gif),
+            // #[cfg(feature = "pnm")]
+            // WasmImageOutputFormat::Pnm => Ok(ImageOutputFormat::Pnm),
+            // #[cfg(feature = "bmp")]
+            WasmImageOutputFormat::Bmp => Ok(ImageOutputFormat::Bmp),
+            // #[cfg(feature = "ico")]
+            WasmImageOutputFormat::Ico => Ok(ImageOutputFormat::Ico),
+            // #[cfg(feature = "farbfeld")]
+            // WasmImageOutputFormat::Farbfeld => Ok(ImageOutputFormat::Farbfeld),
+            // #[cfg(feature = "avif")]
+            WasmImageOutputFormat::Avif => Ok(ImageOutputFormat::Avif),
+            #[allow(unreachable_patterns)]
+            _ => Err("Unsupported image format"),
+        }
+    }
+}
+
+impl TryFrom<ImageOutputFormat> for WasmImageOutputFormat {
+    type Error = &'static str;
+
+    fn try_from(image_format: ImageOutputFormat) -> Result<Self, Self::Error> {
+        match image_format {
+            #[cfg(feature = "png")]
+            ImageOutputFormat::Png => Ok(WasmImageOutputFormat::Png),
+            #[cfg(feature = "jpeg")]
+            ImageOutputFormat::Jpeg => Ok(WasmImageOutputFormat::Jpeg),
+            #[cfg(feature = "gif")]
+            ImageOutputFormat::Gif => Ok(WasmImageOutputFormat::Gif),
+            #[cfg(feature = "webp")]
+            ImageOutputFormat::WebP => Ok(WasmImageOutputFormat::WebP),
+            // #[cfg(feature = "pnm")]
+            // ImageOutputFormat::Pnm => Ok(WasmImageOutputFormat::Pnm),
+            #[cfg(feature = "tiff")]
+            ImageOutputFormat::Tiff => Ok(WasmImageOutputFormat::Tiff),
+            // #[cfg(feature = "tga")]
+            // ImageOutputFormat::Tga => Ok(WasmImageOutputFormat::Tga),
+            // #[cfg(feature = "dds")]
+            // ImageOutputFormat::Dds => Ok(WasmImageOutputFormat::Dds),
+            #[cfg(feature = "bmp")]
+            ImageOutputFormat::Bmp => Ok(WasmImageOutputFormat::Bmp),
+            #[cfg(feature = "ico")]
+            ImageOutputFormat::Ico => Ok(WasmImageOutputFormat::Ico),
+            // #[cfg(feature = "hdr")]
+            // ImageOutputFormat::Hdr => Ok(WasmImageOutputFormat::Hdr),
+            // #[cfg(feature = "farbfeld")]
+            // ImageOutputFormat::Farbfeld => Ok(WasmImageOutputFormat::Farbfeld),
+            #[cfg(feature = "avif")]
+            ImageOutputFormat::Avif => Ok(WasmImageOutputFormat::Avif),
             #[allow(unreachable_patterns)]
             _ => Err("Unsupported image format"),
         }
@@ -133,18 +275,19 @@ fn set_panic_hook() {
 }
 
 #[wasm_bindgen(js_name = "guessFormat")]
-pub fn guess_format(buffer: &[u8]) -> Result<WasmImageFormat, JsValue> {
-    let format = image::guess_format(buffer).map_err(image_error_to_js_error)?;
+pub fn guess_format(bytes: &[u8]) -> Result<WasmImageFormat, JsValue> {
+    set_panic_hook();
+
+    let format = image::guess_format(bytes).map_err(image_error_to_js_error)?;
 
     Ok(format.try_into().map_err(message_to_js_error)?)
 }
 
-#[wasm_bindgen]
-pub struct ImageDimensions(pub u32, pub u32);
-
 #[wasm_bindgen(js_name = "imageDimensions")]
-pub fn image_dimensions(buffer: &[u8]) -> Result<Box<[u32]>, JsValue> {
-    let reader = Reader::new(Cursor::new(buffer));
+pub fn image_dimensions(bytes: &[u8]) -> Result<Box<[u32]>, JsValue> {
+    set_panic_hook();
+
+    let reader = Reader::new(Cursor::new(bytes));
     let dimensions = reader
         .with_guessed_format()
         .map_err(io_error_to_js_error)?
@@ -154,38 +297,62 @@ pub fn image_dimensions(buffer: &[u8]) -> Result<Box<[u32]>, JsValue> {
     Ok(Box::new([dimensions.0, dimensions.1]))
 }
 
+#[wasm_bindgen(js_name = "loadFromMemory")]
+pub fn load_from_memory(bytes: &[u8]) -> Result<WasmDynamicImage, JsValue>  {
+    set_panic_hook();
+
+    let dynamic_image = image::load_from_memory(bytes).map_err(image_error_to_js_error)?;
+
+    Ok(WasmDynamicImage { instance: dynamic_image })
+}
+
+#[wasm_bindgen(js_name = "loadFromMemoryWithFormat")]
+pub fn load_from_memory_with_format(bytes: &[u8], format: WasmImageFormat) -> Result<WasmDynamicImage, JsValue>  {
+    set_panic_hook();
+
+    let image_format = format.try_into().map_err(message_to_js_error)?;
+    let dynamic_image = image::load_from_memory_with_format(bytes, image_format)
+        .map_err(image_error_to_js_error)?;
+
+    Ok(WasmDynamicImage { instance: dynamic_image })
+}
+
 #[wasm_bindgen]
-impl WasmImage {
-    #[wasm_bindgen(js_name = "fromBytes")]
-    pub fn from_bytes(bytes: Vec<u8>) -> Result<WasmImage, JsValue> {
-        set_panic_hook();
+pub struct WasmDynamicImage {
+    instance: DynamicImage,
+}
 
-        let dynamic_image = image::load_from_memory(&bytes).map_err(image_error_to_js_error)?;
-
-        Ok(WasmImage { dynamic_image })
+#[wasm_bindgen]
+impl WasmDynamicImage {
+    #[wasm_bindgen(js_name = "toBytes")]
+    pub fn to_bytes(self) -> Vec<u8> {
+        self.instance.into_bytes()
     }
 
-    #[wasm_bindgen(js_name = "fromBytesWithFormat")]
-    pub fn from_bytes_with_format(
-        buffer: Vec<u8>,
-        format: WasmImageFormat,
-    ) -> Result<WasmImage, JsValue> {
-        set_panic_hook();
+    #[wasm_bindgen(js_name = "toFormat")]
+    pub fn to_format(self, format: WasmImageOutputFormat) -> Result<Vec<u8>, JsValue> {
+        let mut buffer = vec![];
+        let image_output_format: ImageOutputFormat = format.try_into().map_err(message_to_js_error)?;
+        
+        self.instance.write_to(&mut buffer, image_output_format).map_err(image_error_to_js_error)?;
 
-        let image_format = format.try_into().map_err(message_to_js_error)?;
-        let dynamic_image = image::load_from_memory_with_format(&buffer, image_format)
-            .map_err(image_error_to_js_error)?;
-
-        Ok(WasmImage { dynamic_image })
+        Ok(buffer)
     }
 
-    #[wasm_bindgen(js_name = "getBytes")]
-    pub fn get_bytes(self) -> Vec<u8> {
-        self.dynamic_image.into_bytes()
+    /// wasm_bindgen currently does not support enums with values.
+    /// See https://github.com/rustwasm/wasm-bindgen/issues/2407
+    /// This is why we need extra methods for enums that carry values, such as ImageOutputFormat::Jpeg
+    #[wasm_bindgen(js_name = "toFormatJpeg")]
+    pub fn to_format_jpeg(self, quality: u8) -> Result<Vec<u8>, JsValue> {
+        let mut buffer = vec![];
+        
+        self.instance.write_to(&mut buffer, ImageOutputFormat::Jpeg(quality)).map_err(image_error_to_js_error)?;
+        
+        Ok(buffer)
     }
 
     pub fn grayscale(&mut self) {
-        self.dynamic_image = self.dynamic_image.grayscale();
+        self.instance = self.instance.grayscale();
     }
 
     pub fn dispose(self) {
