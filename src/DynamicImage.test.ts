@@ -13,6 +13,22 @@ describe("DynamicImage", () => {
     dynamicImage?.dispose();
   });
 
+  const compare = async ({
+    result,
+    snapshot,
+  }: {
+    result: Uint8Array;
+    snapshot: string;
+  }) => {
+    if (updateSnapshots) {
+      await snapshots.write(snapshot, result);
+    } else {
+      const snapshotBuffer = await snapshots.read(snapshot);
+
+      expect(snapshotBuffer.compare(result)).toBe(0);
+    }
+  };
+
   test("constructor() creates an instance", async () => {
     const bytes = await images.read(images.paths.ballPng);
 
@@ -38,117 +54,111 @@ describe("DynamicImage", () => {
   });
 
   test("crop()", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
-    dynamicImage.crop({x: 100, y: 100, width: 100, height: 100});
+    dynamicImage.crop({ x: 100, y: 100, width: 100, height: 100 });
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.croppedJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.croppedJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.croppedJpg,
+    });
   });
 
   test("invert()", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
     dynamicImage.invert();
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.invertedJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.invertedJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.invertedJpg,
+    });
   });
 
   test("resize() by width", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
     dynamicImage.resize({
-        width: 100,
+      width: 100,
     });
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.resizedByWidthJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.resizedByWidthJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.resizedByWidthJpg,
+    });
   });
 
   test("resize() by height", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
     dynamicImage.resize({
-        height: 100,
+      height: 100,
     });
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.resizedByHeightJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.resizedByHeightJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.resizedByHeightJpg,
+    });
   });
 
   test("resize() by width and height", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
     dynamicImage.resize({
-        width: 100,
-        height: 100,
+      width: 100,
+      height: 100,
     });
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.resizedByWidthHeightJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.resizedByWidthHeightJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.resizedByWidthHeightJpg,
+    });
   });
 
   test("grayscale()", async () => {
-    const dynamicImage = new DynamicImage({ bytes: await images.read(images.paths.catJpg) });
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
 
     dynamicImage.grayscale();
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
     });
-    
-    if (updateSnapshots) {
-        await snapshots.write(snapshots.paths.grayscaleJpg, result);
-    } else {
-        const snapshot = await snapshots.read(snapshots.paths.grayscaleJpg);
 
-        expect(snapshot.compare(result)).toBe(0);
-    }
+    await compare({
+      result,
+      snapshot: snapshots.paths.grayscaleJpg,
+    });
   });
 });
