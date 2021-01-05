@@ -1,7 +1,13 @@
+/* eslint-disable import/extensions */
 import * as pkg from "../pkg";
-import { WasmImageFormat as ImageFormat } from "../pkg";
+/* eslint-enable import/extensions */
+import { FilterType, ImageFormat } from "./lib";
 
-export { ImageFormat };
+/**
+ * The max value that can be represented with unsigned 32 bit.
+ * See https://doc.rust-lang.org/std/primitive.u32.html
+ */
+const U32_MAX = 4294967295;
 
 export enum OutputFormat {
   Png = "Png",
@@ -33,9 +39,9 @@ export type OutputFormatOptions =
       /**
        * The image quality in percent from 0 to 100:
        * 0 = worst quality
-       * 100 = best quality
+       * 100 = best quality (default)
        **/
-      quality: number;
+      quality?: number;
     }
   | {
       format: OutputFormat.Gif;
@@ -49,6 +55,19 @@ export type OutputFormatOptions =
   | {
       format: OutputFormat.Avif;
     };
+
+export type ResizeOptions = {
+  filter?: FilterType;
+} & (
+  | {
+      width: number;
+      height?: number;
+    }
+  | {
+      width?: number;
+      height: number;
+    }
+);
 
 export class DynamicImage {
   protected instance: pkg.WasmDynamicImage;
@@ -71,11 +90,39 @@ export class DynamicImage {
 
     switch (outputFormatOptions.format) {
       case OutputFormat.Jpeg: {
-        return this.instance.toFormatJpeg(outputFormatOptions.quality);
+        const { quality = 100 } = outputFormatOptions;
+
+        return this.instance.toFormatJpeg(quality);
       }
       default: {
         return this.instance.toFormat(format);
       }
+    }
+  };
+
+  crop = ({
+    x,
+    y,
+    width,
+    height,
+  }: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) => {
+    this.instance.crop(x, y, width, height);
+  };
+
+  invert = () => {
+    this.instance.invert();
+  };
+
+  resize = ({ width, height, filter = FilterType.Lanczos3 }: ResizeOptions) => {
+    if (width !== undefined && height !== undefined) {
+      this.instance.resizeExact(width, height, filter);
+    } else {
+      this.instance.resize(width ?? U32_MAX, height ?? U32_MAX, filter);
     }
   };
 
