@@ -124,6 +124,10 @@ export class DynamicImage {
     this.instance.crop(x, y, width, height);
   };
 
+  grayscale = () => {
+    this.instance.grayscale();
+  };
+
   invert = () => {
     this.instance.invert();
   };
@@ -152,8 +156,40 @@ export class DynamicImage {
     this.instance.unsharpen(sigma, threshold);
   };
 
-  grayscale = () => {
-    this.instance.grayscale();
+  filter3x3 = (kernel: Float32Array) => {
+    this.instance.filter3x3(kernel);
+  };
+
+  adjustContrast = (contrast: number) => {
+    this.instance.adjustContrast(contrast);
+  };
+
+  brighten = (value: number) => {
+    this.instance.brighten(value);
+  };
+
+  huerotate = (degree: number) => {
+    this.instance.huerotate(degree);
+  };
+
+  flipv = () => {
+    this.instance.flipv();
+  };
+
+  fliph = () => {
+    this.instance.fliph();
+  };
+
+  rotate90 = () => {
+    this.instance.rotate90();
+  };
+
+  rotate180 = () => {
+    this.instance.rotate180();
+  };
+
+  rotate270 = () => {
+    this.instance.rotate270();
   };
 
   dispose = () => {

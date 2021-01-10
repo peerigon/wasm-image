@@ -118,6 +118,10 @@ impl WasmDynamicImage {
         self.instance = self.instance.crop_imm(x, y, width, height);
     }
 
+    pub fn grayscale(&mut self) {
+        self.instance = self.instance.grayscale();
+    }
+
     pub fn invert(&mut self) {
         self.instance.invert();
     }
@@ -170,8 +174,41 @@ impl WasmDynamicImage {
         self.instance = self.instance.unsharpen(sigma, threshold);
     }
 
-    pub fn grayscale(&mut self) {
-        self.instance = self.instance.grayscale();
+    pub fn filter3x3(&mut self, kernel: &[f32]) {
+        self.instance = self.instance.filter3x3(kernel);
+    }
+
+    #[wasm_bindgen(js_name = "adjustContrast")]
+    pub fn adjust_contrast(&mut self, contrast: f32) {
+        self.instance = self.instance.adjust_contrast(contrast);
+    }
+
+    pub fn brighten(&mut self, value: i32) {
+        self.instance = self.instance.brighten(value);
+    }
+
+    pub fn huerotate(&mut self, value: i32) {
+        self.instance = self.instance.huerotate(value);
+    }
+
+    pub fn flipv(&mut self) {
+        self.instance = self.instance.flipv();
+    }
+
+    pub fn fliph(&mut self) {
+        self.instance = self.instance.fliph();
+    }
+
+    pub fn rotate90(&mut self) {
+        self.instance = self.instance.rotate90();
+    }
+
+    pub fn rotate180(&mut self) {
+        self.instance = self.instance.rotate180();
+    }
+
+    pub fn rotate270(&mut self) {
+        self.instance = self.instance.rotate270();
     }
 
     pub fn dispose(self) {

@@ -70,6 +70,23 @@ describe("DynamicImage", () => {
     });
   });
 
+  test("grayscale()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.grayscale();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.grayscaleJpg,
+    });
+  });
+
   test("invert()", async () => {
     const dynamicImage = new DynamicImage({
       bytes: await images.read(images.paths.catJpg),
@@ -237,12 +254,13 @@ describe("DynamicImage", () => {
     });
   });
 
-  test("grayscale()", async () => {
+  // TODO: Find out if this is working as intended
+  test("filter3x3()", async () => {
     const dynamicImage = new DynamicImage({
       bytes: await images.read(images.paths.catJpg),
     });
 
-    dynamicImage.grayscale();
+    dynamicImage.filter3x3(Float32Array.from([0, 1, 0, 0, 1, 0, 0, 1, 0]));
 
     const result = dynamicImage.toBytes({
       format: OutputFormat.Jpeg,
@@ -250,7 +268,143 @@ describe("DynamicImage", () => {
 
     await compare({
       result,
-      snapshot: snapshots.paths.grayscaleJpg,
+      snapshot: snapshots.paths.filter3x3Jpg,
+    });
+  });
+
+  test("adjustContrast()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.adjustContrast(100);
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.adjustContrastJpg,
+    });
+  });
+
+  test("brighten()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.brighten(100);
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.brightenJpg,
+    });
+  });
+
+  test("huerotate()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.huerotate(100);
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.huerotateJpg,
+    });
+  });
+
+  test("flipv()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.flipv();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.flipvJpg,
+    });
+  });
+
+  test("fliph()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.fliph();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.fliphJpg,
+    });
+  });
+
+  test("rotate90()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.rotate90();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.rotate90Jpg,
+    });
+  });
+
+  test("rotate180()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.rotate180();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.rotate180Jpg,
+    });
+  });
+
+  test("rotate270()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.rotate270();
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.rotate270Jpg,
     });
   });
 });
