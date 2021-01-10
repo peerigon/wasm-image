@@ -1,25 +1,25 @@
-import { guessFormat, WasmImageFormat } from "./lib";
+import { guessFormat, ImageFormat } from "./lib";
 import * as images from "./tests/images";
 
 describe("guessFormat()", () => {
-  const expectFormat = (format: WasmImageFormat) => (buffer: Buffer) =>{
+  const expectFormat = (format: ImageFormat) => (buffer: Buffer) =>{
     expect(guessFormat(buffer)).toBe(format);
   };
 
   test("Detects jpg", async () => {
     const buffers = await Promise.all([
-      images.readCatJpg()
+      await images.read(images.paths.catJpg)
     ]);
 
-    buffers.forEach(expectFormat(WasmImageFormat.Jpeg));
+    buffers.forEach(expectFormat(ImageFormat.Jpeg));
   });
 
   test("Detects png", async () => {
     const buffers = await Promise.all([
-      images.readBallPng(),
-      images.readBasi2c08Png()
+      await images.read(images.paths.ballPng),
+      await images.read(images.paths.basi2c08Png)
     ]);
 
-    buffers.forEach(expectFormat(WasmImageFormat.Png));
+    buffers.forEach(expectFormat(ImageFormat.Png));
   });
 });

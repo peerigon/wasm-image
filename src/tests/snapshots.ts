@@ -10,6 +10,9 @@ export const paths = {
     resizedByWidthJpg: resolve(pathToSnapshots, "resizedByWidth.jpg"),
     resizedByHeightJpg: resolve(pathToSnapshots, "resizedByHeight.jpg"),
     resizedByWidthHeightJpg: resolve(pathToSnapshots, "resizedByWidthHeight.jpg"),
+    thumbnailByWidthJpg: resolve(pathToSnapshots, "thumbnailByWidth.jpg"),
+    thumbnailByHeightJpg: resolve(pathToSnapshots, "thumbnailByHeight.jpg"),
+    thumbnailByWidthHeightJpg: resolve(pathToSnapshots, "thumbnailByWidthHeight.jpg"),
 };
 
 export const read = async (path: string) =>

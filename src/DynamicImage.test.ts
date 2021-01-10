@@ -145,6 +145,64 @@ describe("DynamicImage", () => {
     });
   });
 
+  test("thumbnail() by width", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.thumbnail({
+      width: 100,
+    });
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.thumbnailByWidthJpg,
+    });
+  });
+
+  test("thumbnail() by height", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.thumbnail({
+      height: 100,
+    });
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.thumbnailByHeightJpg,
+    });
+  });
+
+  test("thumbnail() by width and height", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.thumbnail({
+      width: 100,
+      height: 100,
+    });
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.thumbnailByWidthHeightJpg,
+    });
+  });
+
   test("grayscale()", async () => {
     const dynamicImage = new DynamicImage({
       bytes: await images.read(images.paths.catJpg),

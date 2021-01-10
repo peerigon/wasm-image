@@ -69,6 +69,16 @@ export type ResizeOptions = {
     }
 );
 
+export type ThumbnailOptions =
+  | {
+      width: number;
+      height?: number;
+    }
+  | {
+      width?: number;
+      height: number;
+    };
+
 export class DynamicImage {
   protected instance: pkg.WasmDynamicImage;
 
@@ -123,6 +133,14 @@ export class DynamicImage {
       this.instance.resizeExact(width, height, filter);
     } else {
       this.instance.resize(width ?? U32_MAX, height ?? U32_MAX, filter);
+    }
+  };
+
+  thumbnail = ({ width, height }: ThumbnailOptions) => {
+    if (width !== undefined && height !== undefined) {
+      this.instance.thumbnailExact(width, height);
+    } else {
+      this.instance.thumbnail(width ?? U32_MAX, height ?? U32_MAX);
     }
   };
 
