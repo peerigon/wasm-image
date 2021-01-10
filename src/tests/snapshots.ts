@@ -13,6 +13,8 @@ export const paths = {
     thumbnailByWidthJpg: resolve(pathToSnapshots, "thumbnailByWidth.jpg"),
     thumbnailByHeightJpg: resolve(pathToSnapshots, "thumbnailByHeight.jpg"),
     thumbnailByWidthHeightJpg: resolve(pathToSnapshots, "thumbnailByWidthHeight.jpg"),
+    blurJpg: resolve(pathToSnapshots, "blur.jpg"),
+    unsharpenJpg: resolve(pathToSnapshots, "unsharpen.jpg"),
 };
 
 export const read = async (path: string) =>

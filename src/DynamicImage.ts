@@ -144,6 +144,14 @@ export class DynamicImage {
     }
   };
 
+  blur = (sigma: number) => {
+    this.instance.blur(sigma);
+  };
+
+  unsharpen = (sigma: number, threshold: number) => {
+    this.instance.unsharpen(sigma, threshold);
+  };
+
   grayscale = () => {
     this.instance.grayscale();
   };

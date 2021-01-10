@@ -162,6 +162,14 @@ impl WasmDynamicImage {
         Ok(())
     }
 
+    pub fn blur(&mut self, sigma: f32) {
+        self.instance = self.instance.blur(sigma);
+    }
+
+    pub fn unsharpen(&mut self, sigma: f32, threshold: i32) {
+        self.instance = self.instance.unsharpen(sigma, threshold);
+    }
+
     pub fn grayscale(&mut self) {
         self.instance = self.instance.grayscale();
     }

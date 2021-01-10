@@ -203,6 +203,40 @@ describe("DynamicImage", () => {
     });
   });
 
+  test("blur()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.blur(3);
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.blurJpg,
+    });
+  });
+
+  test("unsharpen()", async () => {
+    const dynamicImage = new DynamicImage({
+      bytes: await images.read(images.paths.catJpg),
+    });
+
+    dynamicImage.unsharpen(3, 20);
+
+    const result = dynamicImage.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await compare({
+      result,
+      snapshot: snapshots.paths.unsharpenJpg,
+    });
+  });
+
   test("grayscale()", async () => {
     const dynamicImage = new DynamicImage({
       bytes: await images.read(images.paths.catJpg),
