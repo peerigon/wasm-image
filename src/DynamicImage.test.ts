@@ -69,6 +69,19 @@ describe("DynamicImage", () => {
   // wasm_bindgen should take care of this but you never know...
   test.todo("constructor() with wrong format does not leak memory");
 
+  test("toBytes() with no arguments", async () => {
+    const image1 = await createInstance(images.paths.catJpg);
+    const bytesOfImage1 = image1.toBytes();
+    
+    expect(bytesOfImage1).toBeInstanceOf(Uint8Array);
+    expect(bytesOfImage1.length).toBe(230400);
+    expect(Buffer.compare(bytesOfImage1, image1.toBytes())).toBe(0);
+
+    const image2 = await createInstance(images.paths.catJpg);
+
+    expect(Buffer.compare(bytesOfImage1, image2.toBytes())).toBe(0);
+  });
+
   test("crop()", async () => {
     const dynamicImage = await createInstance(images.paths.catJpg);
 
