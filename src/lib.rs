@@ -71,8 +71,8 @@ pub fn load_from_memory_with_format(
     set_panic_hook();
 
     let image_format: ImageFormat = format.try_into().map_err(errors::to_js_error)?;
-    let dynamic_image = image::load_from_memory_with_format(bytes, image_format)
-        .map_err(errors::to_js_error)?;
+    let dynamic_image =
+        image::load_from_memory_with_format(bytes, image_format).map_err(errors::to_js_error)?;
 
     Ok(WasmDynamicImage {
         instance: dynamic_image,
@@ -122,7 +122,11 @@ impl WasmDynamicImage {
     }
 
     pub fn color(&self) -> Result<WasmColorType, JsValue> {
-        let color_type: WasmColorType = self.instance.color().try_into().map_err(errors::to_js_error)?;
+        let color_type: WasmColorType = self
+            .instance
+            .color()
+            .try_into()
+            .map_err(errors::to_js_error)?;
 
         Ok(color_type)
     }
