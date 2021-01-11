@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
-import { DynamicImage, ImageFormat, OutputFormat } from "./lib";
+import { ColorType, DynamicImage, ImageFormat, OutputFormat } from "./lib";
 import * as images from "./tests/images";
 import * as snapshots from "./tests/snapshots";
 
 const updateSnapshots = false;
 
 describe("DynamicImage", () => {
-  let dynamicImage: DynamicImage;
+  const instances: Array<DynamicImage> = [];
 
   afterEach(() => {
-    dynamicImage?.dispose();
+    instances.forEach((instance) => instance.dispose());
+    instances.length = 0;
   });
+
+  const createInstance = async (imgPath: string) => {
+    const instance = new DynamicImage({
+      bytes: await images.read(imgPath),
+    });
+
+    instances.push(instance);
+
+    return instance;
+  };
 
   const compare = async ({
     result,
@@ -30,9 +41,9 @@ describe("DynamicImage", () => {
   };
 
   test("constructor() creates an instance", async () => {
-    const bytes = await images.read(images.paths.ballPng);
-
-    expect(() => new DynamicImage({ bytes })).not.toThrow();
+    expect(async () => {
+      await createInstance(images.paths.ballPng);
+    }).not.toThrow();
   });
 
   test("constructor() with format creates an instance", async () => {
@@ -53,10 +64,13 @@ describe("DynamicImage", () => {
     );
   });
 
+  // We can't call dispose() on these instances.
+  // We need to make sure that the allocated buffer is free'ed
+  // wasm_bindgen should take care of this but you never know...
+  test.todo("constructor() with wrong format does not leak memory");
+
   test("crop()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.crop({ x: 100, y: 100, width: 100, height: 100 });
 
@@ -70,10 +84,20 @@ describe("DynamicImage", () => {
     });
   });
 
+  test("color()", async () => {
+    const [catJpg, ballPng, basi2c08Png] = await Promise.all([
+      images.paths.catJpg,
+      images.paths.ballPng,
+      images.paths.basi2c08Png,
+    ].map(createInstance));
+
+    expect(catJpg.color()).toBe(ColorType.Rgb8);
+    expect(ballPng.color()).toBe(ColorType.Rgba8);
+    expect(basi2c08Png.color()).toBe(ColorType.Rgb8);
+  });
+
   test("grayscale()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.grayscale();
 
@@ -88,9 +112,7 @@ describe("DynamicImage", () => {
   });
 
   test("invert()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.invert();
 
@@ -105,9 +127,7 @@ describe("DynamicImage", () => {
   });
 
   test("resize() by width", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.resize({
       width: 100,
@@ -124,9 +144,7 @@ describe("DynamicImage", () => {
   });
 
   test("resize() by height", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.resize({
       height: 100,
@@ -143,9 +161,7 @@ describe("DynamicImage", () => {
   });
 
   test("resize() by width and height", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.resize({
       width: 100,
@@ -163,9 +179,7 @@ describe("DynamicImage", () => {
   });
 
   test("thumbnail() by width", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.thumbnail({
       width: 100,
@@ -182,9 +196,7 @@ describe("DynamicImage", () => {
   });
 
   test("thumbnail() by height", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.thumbnail({
       height: 100,
@@ -201,9 +213,7 @@ describe("DynamicImage", () => {
   });
 
   test("thumbnail() by width and height", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.thumbnail({
       width: 100,
@@ -221,9 +231,7 @@ describe("DynamicImage", () => {
   });
 
   test("blur()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.blur(3);
 
@@ -238,9 +246,7 @@ describe("DynamicImage", () => {
   });
 
   test("unsharpen()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.unsharpen(3, 20);
 
@@ -256,9 +262,7 @@ describe("DynamicImage", () => {
 
   // TODO: Find out if this is working as intended
   test("filter3x3()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.filter3x3(Float32Array.from([0, 1, 0, 0, 1, 0, 0, 1, 0]));
 
@@ -273,9 +277,7 @@ describe("DynamicImage", () => {
   });
 
   test("adjustContrast()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.adjustContrast(100);
 
@@ -290,9 +292,7 @@ describe("DynamicImage", () => {
   });
 
   test("brighten()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.brighten(100);
 
@@ -307,9 +307,7 @@ describe("DynamicImage", () => {
   });
 
   test("huerotate()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.huerotate(100);
 
@@ -324,9 +322,7 @@ describe("DynamicImage", () => {
   });
 
   test("flipv()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.flipv();
 
@@ -341,9 +337,7 @@ describe("DynamicImage", () => {
   });
 
   test("fliph()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.fliph();
 
@@ -358,9 +352,7 @@ describe("DynamicImage", () => {
   });
 
   test("rotate90()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.rotate90();
 
@@ -375,9 +367,7 @@ describe("DynamicImage", () => {
   });
 
   test("rotate180()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.rotate180();
 
@@ -392,9 +382,7 @@ describe("DynamicImage", () => {
   });
 
   test("rotate270()", async () => {
-    const dynamicImage = new DynamicImage({
-      bytes: await images.read(images.paths.catJpg),
-    });
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
     dynamicImage.rotate270();
 

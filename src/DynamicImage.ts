@@ -124,6 +124,10 @@ export class DynamicImage {
     this.instance.crop(x, y, width, height);
   };
 
+  color = () => {
+    return this.instance.color();
+  };
+
   grayscale = () => {
     this.instance.grayscale();
   };
@@ -193,7 +197,6 @@ export class DynamicImage {
   };
 
   dispose = () => {
-    this.instance.dispose();
     this.instance.free();
   };
 }

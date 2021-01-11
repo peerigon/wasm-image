@@ -2,6 +2,7 @@ import * as fs from "fs/promises";
 import { resolve } from "path";
 
 const pathToImages = resolve(__dirname, "images");
+const cache = new Map<string, Uint8Array>();
 
 export const paths = {
     ballPng: resolve(pathToImages, "ball.png"),
@@ -9,8 +10,10 @@ export const paths = {
     catJpg: resolve(pathToImages, "cat.jpg"),
 };
 
-export const read = async (path: string) =>
-  fs.readFile(path);
+export const read = async (path: string) => {
+  if (cache.has(path) === false) {
+    cache.set(path, await fs.readFile(path));
+  }
 
-export const write = async (path: string, bytes: Uint8Array) =>
-  fs.writeFile(path, bytes);
+  return cache.get(path)!;
+}

@@ -1,6 +1,9 @@
 use image::{imageops::FilterType, io::Reader, DynamicImage, ImageFormat, ImageOutputFormat};
+use js_sys::Uint8Array;
 use std::{convert::TryInto, io::Cursor};
 use wasm_bindgen::prelude::*;
+mod color_type;
+use color_type::WasmColorType;
 mod errors;
 mod filter_type;
 use filter_type::WasmImageFilterType;
@@ -30,9 +33,9 @@ fn set_panic_hook() {
 pub fn guess_format(bytes: &[u8]) -> Result<WasmImageFormat, JsValue> {
     set_panic_hook();
 
-    let format = image::guess_format(bytes).map_err(errors::image_error_to_js_error)?;
+    let format = image::guess_format(bytes).map_err(errors::to_js_error)?;
 
-    Ok(format.try_into().map_err(errors::message_to_js_error)?)
+    Ok(format.try_into().map_err(errors::to_js_error)?)
 }
 
 #[wasm_bindgen(js_name = "imageDimensions")]
@@ -42,9 +45,9 @@ pub fn image_dimensions(bytes: &[u8]) -> Result<Box<[u32]>, JsValue> {
     let reader = Reader::new(Cursor::new(bytes));
     let dimensions = reader
         .with_guessed_format()
-        .map_err(errors::io_error_to_js_error)?
+        .map_err(errors::to_js_error)?
         .into_dimensions()
-        .map_err(errors::image_error_to_js_error)?;
+        .map_err(errors::to_js_error)?;
 
     Ok(Box::new([dimensions.0, dimensions.1]))
 }
@@ -53,7 +56,7 @@ pub fn image_dimensions(bytes: &[u8]) -> Result<Box<[u32]>, JsValue> {
 pub fn load_from_memory(bytes: &[u8]) -> Result<WasmDynamicImage, JsValue> {
     set_panic_hook();
 
-    let dynamic_image = image::load_from_memory(bytes).map_err(errors::image_error_to_js_error)?;
+    let dynamic_image = image::load_from_memory(bytes).map_err(errors::to_js_error)?;
 
     Ok(WasmDynamicImage {
         instance: dynamic_image,
@@ -67,9 +70,9 @@ pub fn load_from_memory_with_format(
 ) -> Result<WasmDynamicImage, JsValue> {
     set_panic_hook();
 
-    let image_format: ImageFormat = format.try_into().map_err(errors::message_to_js_error)?;
+    let image_format: ImageFormat = format.try_into().map_err(errors::to_js_error)?;
     let dynamic_image = image::load_from_memory_with_format(bytes, image_format)
-        .map_err(errors::image_error_to_js_error)?;
+        .map_err(errors::to_js_error)?;
 
     Ok(WasmDynamicImage {
         instance: dynamic_image,
@@ -84,18 +87,18 @@ pub struct WasmDynamicImage {
 #[wasm_bindgen]
 impl WasmDynamicImage {
     #[wasm_bindgen(js_name = "toBytes")]
-    pub fn to_bytes(self) -> Vec<u8> {
-        self.instance.into_bytes()
+    pub fn to_bytes(&self) -> Uint8Array {
+        self.instance.as_bytes().into()
     }
 
     #[wasm_bindgen(js_name = "toFormat")]
-    pub fn to_format(self, format: WasmImageOutputFormat) -> Result<Vec<u8>, JsValue> {
+    pub fn to_format(&self, format: WasmImageOutputFormat) -> Result<Vec<u8>, JsValue> {
         let mut buffer = vec![];
-        let format: ImageOutputFormat = format.try_into().map_err(errors::message_to_js_error)?;
+        let format: ImageOutputFormat = format.try_into().map_err(errors::to_js_error)?;
 
         self.instance
             .write_to(&mut buffer, format)
-            .map_err(errors::image_error_to_js_error)?;
+            .map_err(errors::to_js_error)?;
 
         Ok(buffer)
     }
@@ -104,18 +107,24 @@ impl WasmDynamicImage {
     /// See https://github.com/rustwasm/wasm-bindgen/issues/2407
     /// This is why we need extra methods for enums that carry values, such as ImageOutputFormat::Jpeg
     #[wasm_bindgen(js_name = "toFormatJpeg")]
-    pub fn to_format_jpeg(self, quality: u8) -> Result<Vec<u8>, JsValue> {
+    pub fn to_format_jpeg(&self, quality: u8) -> Result<Vec<u8>, JsValue> {
         let mut buffer = vec![];
 
         self.instance
             .write_to(&mut buffer, ImageOutputFormat::Jpeg(quality))
-            .map_err(errors::image_error_to_js_error)?;
+            .map_err(errors::to_js_error)?;
 
         Ok(buffer)
     }
 
     pub fn crop(&mut self, x: u32, y: u32, width: u32, height: u32) {
         self.instance = self.instance.crop_imm(x, y, width, height);
+    }
+
+    pub fn color(&self) -> Result<WasmColorType, JsValue> {
+        let color_type: WasmColorType = self.instance.color().try_into().map_err(errors::to_js_error)?;
+
+        Ok(color_type)
     }
 
     pub fn grayscale(&mut self) {
@@ -132,7 +141,7 @@ impl WasmDynamicImage {
         nheight: u32,
         filter: WasmImageFilterType,
     ) -> Result<(), JsValue> {
-        let filter: FilterType = filter.try_into().map_err(errors::message_to_js_error)?;
+        let filter: FilterType = filter.try_into().map_err(errors::to_js_error)?;
 
         self.instance = self.instance.resize(nwidth, nheight, filter);
 
@@ -146,7 +155,7 @@ impl WasmDynamicImage {
         nheight: u32,
         filter: WasmImageFilterType,
     ) -> Result<(), JsValue> {
-        let filter: FilterType = filter.try_into().map_err(errors::message_to_js_error)?;
+        let filter: FilterType = filter.try_into().map_err(errors::to_js_error)?;
 
         self.instance = self.instance.resize_exact(nwidth, nheight, filter);
 
@@ -209,10 +218,5 @@ impl WasmDynamicImage {
 
     pub fn rotate270(&mut self) {
         self.instance = self.instance.rotate270();
-    }
-
-    pub fn dispose(self) {
-        // TODO: Check if this is necessary
-        drop(self);
     }
 }
