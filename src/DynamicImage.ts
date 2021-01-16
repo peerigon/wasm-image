@@ -1,3 +1,7 @@
+// TODO: Implement methods from GenericImage- and GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
+// TODO: Rename DynamicImage to Image?
+// TODO: Decrease file size
+
 /* eslint-disable import/extensions */
 import * as pkg from "../pkg";
 /* eslint-enable import/extensions */
