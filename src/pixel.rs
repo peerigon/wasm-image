@@ -1,49 +1,18 @@
-
-use image::{Rgb, Rgba, Luma, LumaA, Bgr, Bgra};
 use wasm_bindgen::prelude::*;
+use crate::dynamic_image::{WasmDynamicImage};
 
 #[wasm_bindgen]
-pub enum WasmPixel {
-    Rgb(Rgb<u8>),
-    /// Sendable Rgb + alpha channel image buffer
-    Rgba(Rgba<u8>),
-    /// Sendable grayscale image buffer
-    Luma(Luma<u8>),
-    /// Sendable grayscale + alpha channel image buffer
-    LumaA(LumaA<u8>),
-    /// Sendable Bgr image buffer
-    Bgr(Bgr<u8>),
-    /// Sendable Bgr + alpha channel image buffer
-    Bgra(Bgra<u8>),
-    /// Sendable 16-bit Rgb image buffer
-    Rgb(Rgb<u16>),
-    /// Sendable 16-bit Rgb + alpha channel image buffer
-    Rgba(Rgba<u16>),
-    /// Sendable 16-bit grayscale image buffer
-    Luma(Luma<u16>),
-    /// Sendable 16-bit grayscale + alpha channel image buffer
-    LumaA(LumaA<u16>),
-}
+impl WasmDynamicImage {
+    // fn selected_pixel(&self) {
+    //     let pos = self.selected_pixel_position;
 
-// #[wasm_bindgen]
-// pub struct WasmPixel {
-//     instance: Box<dyn Pixel>
-// }
+    //     self.instance.dynamic_image.get_pixel()
+    // }
 
-// #[wasm_bindgen]
-// impl Pixel for WasmPixel {
-//     type Bla: Pixel;
-
-//     /// The number of channels of this pixel type.
-//     const CHANNEL_COUNT: u8;
-//     /// Returns the number of channels of this pixel type.
-//     #[deprecated(note="please use CHANNEL_COUNT associated constant")]
-//     fn channel_count() -> u8 {
-//         Self::CHANNEL_COUNT
-//     }
-
-//     /// Returns the components as a slice.
-//     fn channels(&self) -> &[Self::Subpixel];
+    // /// Returns the components as a slice.
+    // pub fn channels(&self) -> &[Self::Subpixel] {
+    //     self.instance.dynamic_image.get_pixel()
+    // }
 
 //     /// Returns the components as a mutable slice
 //     fn channels_mut(&mut self) -> &mut [Self::Subpixel];
@@ -181,3 +150,4 @@ pub enum WasmPixel {
 //     /// Blend the color of a given pixel into ourself, taking into account alpha channels
 //     fn blend(&mut self, other: &Self);
 // }
+}

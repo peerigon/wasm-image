@@ -72,7 +72,7 @@ describe("DynamicImage", () => {
   test("toBytes() with no arguments", async () => {
     const image1 = await createInstance(images.paths.catJpg);
     const bytesOfImage1 = image1.toBytes();
-    
+
     expect(bytesOfImage1).toBeInstanceOf(Uint8Array);
     expect(bytesOfImage1.length).toBe(230400);
     expect(Buffer.compare(bytesOfImage1, image1.toBytes())).toBe(0);
@@ -98,11 +98,11 @@ describe("DynamicImage", () => {
   });
 
   test("color()", async () => {
-    const [catJpg, ballPng, basi2c08Png] = await Promise.all([
-      images.paths.catJpg,
-      images.paths.ballPng,
-      images.paths.basi2c08Png,
-    ].map(createInstance));
+    const [catJpg, ballPng, basi2c08Png] = await Promise.all(
+      [images.paths.catJpg, images.paths.ballPng, images.paths.basi2c08Png].map(
+        createInstance
+      )
+    );
 
     expect(catJpg.color()).toBe(ColorType.Rgb8);
     expect(ballPng.color()).toBe(ColorType.Rgba8);
@@ -407,5 +407,18 @@ describe("DynamicImage", () => {
       result,
       snapshot: snapshots.paths.rotate270Jpg,
     });
+  });
+
+  test("dimensions(), width(), height(), bounds()", async () => {
+    const dynamicImage = await createInstance(images.paths.catJpg);
+    const dimensions = dynamicImage.dimensions();
+    const width = dynamicImage.width();
+    const height = dynamicImage.height();
+    const bounds = dynamicImage.bounds();
+  
+    expect(dimensions).toMatchObject({ width: 320, height: 240 });
+    expect(width).toBe(320);
+    expect(height).toBe(240);
+    expect(bounds).toMatchObject({ x: 0, y: 0, width: 320, height: 240 });
   });
 });

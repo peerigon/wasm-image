@@ -2,10 +2,10 @@
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
 
-/* eslint-disable import/extensions */
-import * as pkg from "../pkg";
-/* eslint-enable import/extensions */
+import * as wasm from "./wasm";
 import { FilterType, ImageFormat } from "./lib";
+import { Dimensions } from "./dimensions";
+import { Bounds } from "./bounds";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -24,8 +24,8 @@ export enum OutputFormat {
 
 const mapOutputFormatNameToWasmImageOutputFormat = (
   formatName: OutputFormat
-): pkg.WasmImageOutputFormat => {
-  const format = pkg.WasmImageOutputFormat[formatName];
+): wasm.WasmImageOutputFormat => {
+  const format = wasm.WasmImageOutputFormat[formatName];
 
   if (typeof format !== "number") {
     throw new TypeError(`Unknown format ${formatName}`);
@@ -84,13 +84,13 @@ export type ThumbnailOptions =
     };
 
 export class DynamicImage {
-  protected instance: pkg.WasmDynamicImage;
+  protected instance: wasm.WasmDynamicImage;
 
   constructor({ bytes, format }: { bytes: Uint8Array; format?: ImageFormat }) {
     this.instance =
       format === undefined
-        ? pkg.loadFromMemory(bytes)
-        : pkg.loadFromMemoryWithFormat(bytes, format);
+        ? wasm.loadFromMemory(bytes)
+        : wasm.loadFromMemoryWithFormat(bytes, format);
   }
 
   toBytes = (outputFormatOptions?: OutputFormatOptions) => {
@@ -198,6 +198,26 @@ export class DynamicImage {
 
   rotate270 = () => {
     this.instance.rotate270();
+  };
+
+  dimensions = (): Dimensions => {
+    const [width, height] = this.instance.dimensions();
+
+    return {width, height};
+  };
+
+  width = () => {
+    return this.instance.width();
+  };
+
+  height = () => {
+    return this.instance.height();
+  };
+
+  bounds = (): Bounds => {
+    const [x, y, width, height] = this.instance.bounds();
+
+    return {x, y, width, height};
   };
 
   dispose = () => {
