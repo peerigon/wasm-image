@@ -1,6 +1,6 @@
-export * from "./DynamicImage";
-export * from "./imageDimensions";
-export * from "./guessFormat";
+export * from "./dynamic-image";
+export * from "./image-dimensions";
+export * from "./guess-format";
 export {
     WasmColorType as ColorType,
     WasmImageFilterType as FilterType,

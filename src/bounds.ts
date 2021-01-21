@@ -1,6 +1,4 @@
-export type Bounds = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+import { Position } from "./position";
+import { Dimensions } from "./dimensions";
+
+export type Bounds = Position & Dimensions;

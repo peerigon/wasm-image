@@ -1,4 +1,5 @@
 // TODO: Implement methods from GenericImage- and GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
+// TODO: Implement methods from GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImageView.html
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
 
@@ -6,6 +7,7 @@ import * as wasm from "./wasm";
 import { FilterType, ImageFormat } from "./lib";
 import { Dimensions } from "./dimensions";
 import { Bounds } from "./bounds";
+import { Position } from "./position";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -219,6 +221,10 @@ export class DynamicImage {
 
     return {x, y, width, height};
   };
+
+  inBounds = (coordinates: Position) => {
+
+  } ;
 
   dispose = () => {
     this.instance.free();

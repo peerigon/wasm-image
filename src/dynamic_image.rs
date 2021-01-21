@@ -187,6 +187,7 @@ impl WasmDynamicImage {
         (&[bounds.0, bounds.1, bounds.2, bounds.3][..]).into()
     }
 
+    #[wasm_bindgen(js_name = "inBounds")]
     /// Returns true if this x, y coordinate is contained inside the image.
     pub fn in_bounds(&self, x: u32, y: u32) -> bool {
         self.instance.in_bounds(x, y)
