@@ -1,5 +1,6 @@
 // TODO: Implement methods from GenericImage- and GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
 // TODO: Implement methods from GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImageView.html
+// TODO: Implement methods from SubImage-Trait https://docs.rs/image/0.23.12/image/struct.SubImage.html
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
 
@@ -8,6 +9,7 @@ import { FilterType, ImageFormat } from "./lib";
 import { Dimensions } from "./dimensions";
 import { Bounds } from "./bounds";
 import { Position } from "./position";
+import { Pixel } from "./pixel";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -205,7 +207,7 @@ export class DynamicImage {
   dimensions = (): Dimensions => {
     const [width, height] = this.instance.dimensions();
 
-    return {width, height};
+    return { width, height };
   };
 
   width = () => {
@@ -219,12 +221,33 @@ export class DynamicImage {
   bounds = (): Bounds => {
     const [x, y, width, height] = this.instance.bounds();
 
-    return {x, y, width, height};
+    return { x, y, width, height };
   };
 
-  inBounds = (coordinates: Position) => {
+  inBounds = ({ x, y }: Position) => {
+    return this.instance.inBounds(x, y);
+  };
 
-  } ;
+  getPixel = ({ x, y }: Position) => {
+    return new Pixel(x, y);
+  };
+
+  *pixels() {
+    const { width, height } = this.dimensions();
+    let x = 0;
+    let y = 0;
+
+    while (x < width && y < height) {
+      yield new Pixel(x, y);
+
+      x++;
+
+      if (x >= width) {
+        x = 0;
+        y++;
+      }
+    }
+  }
 
   dispose = () => {
     this.instance.free();

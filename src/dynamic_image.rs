@@ -193,42 +193,14 @@ impl WasmDynamicImage {
         self.instance.in_bounds(x, y)
     }
 
-    // Returns the pixel located at (x, y)
-    //
-    // # Panics
-    //
-    // Panics if `(x, y)` is out of bounds.
-    //
-    // TODO: Implement
+    // Implemented in JavaScript
     // pub fn get_pixel(&self, x: u32, y: u32) -> Self::Pixel;
 
-    // Returns the pixel located at (x, y)
-    //
-    // This function can be implemented in a way that ignores bounds checking.
-    // # Safety
-    //
-    // The coordinates must be [`in_bounds`] of the image.
-    //
-    // [`in_bounds`]: #method.in_bounds
-    // unsafe fn unsafe_get_pixel(&self, x: u32, y: u32) -> Self::Pixel {
-    //     self.get_pixel(x, y)
-    // }
+    // Not implemented
+    // unsafe fn unsafe_get_pixel(&self, x: u32, y: u32) -> Self::Pixel
 
-    // Returns an Iterator over the pixels of this image.
-    // The iterator yields the coordinates of each pixel
-    // along with their value
-    // TODO: Implement
-    // pub fn pixels(&self) -> Pixels<Self> {
-    //     let (width, height) = self.dimensions();
-
-    //     Pixels {
-    //         image: self,
-    //         x: 0,
-    //         y: 0,
-    //         width,
-    //         height,
-    //     }
-    // }
+    // Implemented in JavaScript
+    // pub fn pixels(&self) -> Pixels<Self>
 
     // Returns an subimage that is an immutable view into this image.
     // You can use [`GenericImage::sub_image`] if you need a mutable view instead.
