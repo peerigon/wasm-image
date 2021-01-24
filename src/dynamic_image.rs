@@ -223,33 +223,11 @@ impl WasmDynamicImage {
     // TODO: Implement
     // fn put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel);
 
-    // Puts a pixel at location (x, y)
-    //
-    // This function can be implemented in a way that ignores bounds checking.
-    // # Safety
-    //
-    // The coordinates must be [`in_bounds`] of the image.
-    //
-    // [`in_bounds`]: traits.GenericImageView.html#method.in_bounds
+    // Not implemented
     // unsafe fn unsafe_put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel) {
     //     self.put_pixel(x, y, pixel);
     // }
 
-    // Copies all of the pixels from another image into this image.
-    //
-    // The other image is copied with the top-left corner of the
-    // other image placed at (x, y).
-    //
-    // In order to copy only a piece of the other image, use [`GenericImageView::view`].
-    //
-    // You can use [`FlatSamples`] to source pixels from an arbitrary regular raster of channel
-    // values, for example from a foreign interface or a fixed image.
-    //
-    // # Returns
-    // Returns an error if the image is too large to be copied at the given position
-    //
-    // [`GenericImageView::view`]: trait.GenericImageView.html#method.view
-    // [`FlatSamples`]: flat/struct.FlatSamples.html
     // TODO: Implement
     // pub fn copy_from<O>(&mut self, other: &O, x: u32, y: u32) -> ImageResult<()>
     // where
@@ -352,4 +330,77 @@ impl WasmDynamicImage {
         // we need to put the pixel back again into the image
         self.instance.put_pixel(x, y, pixel);
     }
+
+    // Not implemented
+    // fn pixel_from_slice(slice: &[Self::Subpixel]) -> &Self;
+
+    // Not implemented
+    // fn pixel_from_slice_mut(slice: &mut [Self::Subpixel]) -> &mut Self;
+
+    // Not implemented
+    // fn pixel_to_rgb(&self) -> Rgb<Self::Subpixel>;
+
+    // Not implemented
+    // fn pixel_to_rgba(&self) -> Rgba<Self::Subpixel>;
+
+    // Not implemented
+    // fn pixel_to_luma(&self) -> Luma<Self::Subpixel>;
+
+    // Not implemented
+    // fn pixel_to_luma_alpha(&self) -> LumaA<Self::Subpixel>;
+
+    // Not implemented
+    // fn pixel_to_bgr(&self) -> Bgr<Self::Subpixel>;
+
+    // Not implemented
+    // fn pixel_to_bgra(&self) -> Bgra<Self::Subpixel>;
+
+    // Not implemented, use apply()
+    // fn pixel_map(&self, f: &js_sys::Function) -> Self;
+
+    // Implemented in JavaScript
+    // fn pixel_apply(&mut self, x: u32, y: u32, f: &js_sys::Function);
+
+    // Not implemented
+    // fn map_with_alpha<F, G>(&self, f: F, g: G) -> Self;
+
+    // Implemented in JavaScript
+    // fn apply_with_alpha<F, G>(&mut self, f: F, g: G);
+
+    // /// Apply the function ```f``` to each channel except the alpha channel.
+    // fn map_without_alpha<F>(&self, f: F) -> Self
+    // where
+    //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
+    // {
+    //     let mut this = *self;
+    //     this.apply_with_alpha(f, |x| x);
+    //     this
+    // }
+
+    // /// Apply the function ```f``` to each channel except the alpha channel.
+    // /// Works in place.
+    // fn apply_without_alpha<F>(&mut self, f: F)
+    // where
+    //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
+    // {
+    //     self.apply_with_alpha(f, |x| x);
+    // }
+
+    // /// Apply the function ```f``` to each channel of this pixel and
+    // /// ```other``` pairwise.
+    // fn map2<F>(&self, other: &Self, f: F) -> Self
+    // where
+    //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
+
+    // /// Apply the function ```f``` to each channel of this pixel and
+    // /// ```other``` pairwise. Works in-place.
+    // fn apply2<F>(&mut self, other: &Self, f: F)
+    // where
+    //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
+
+    // /// Invert this pixel
+    // fn invert(&mut self);
+
+    // /// Blend the color of a given pixel into ourself, taking into account alpha channels
+    // fn blend(&mut self, other: &Self);
 }
