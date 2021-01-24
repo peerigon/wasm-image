@@ -1,25 +1,25 @@
-use image::Rgba;
-use image::{imageops::FilterType, DynamicImage, ImageOutputFormat, GenericImageView, Pixel};
-use js_sys::{Uint8Array, Uint32Array};
-use std::{convert::TryInto};
-use wasm_bindgen::prelude::*;
 use crate::color_type::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
+use image::Rgba;
+use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageOutputFormat, Pixel};
+use js_sys::{Uint32Array, Uint8Array};
+use std::convert::TryInto;
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct WasmDynamicImage {
     instance: DynamicImage,
-    selected_pixel_position: (u32, u32),
+    selected_pixel: Rgba<u8>,
 }
 
 // Cannot be part of impl WasmDynamicImage because we don't
 // want to expose it to JS land.
 pub fn new(instance: DynamicImage) -> WasmDynamicImage {
     WasmDynamicImage {
+        selected_pixel: instance.get_pixel(0, 0),
         instance,
-        selected_pixel_position: (0, 0),
     }
 }
 
@@ -332,14 +332,15 @@ impl WasmDynamicImage {
 
     // --------------------------------------------------------------
 
-    fn selected_pixel(&self) -> Rgba<u8> {
-        let pos = self.selected_pixel_position;
-        
-        self.instance.get_pixel(pos.0, pos.1)
+    #[wasm_bindgen(js_name = "selectPixel")]
+    pub fn select_pixel(&mut self, x: u32, y: u32) {
+        let pixel = self.instance.get_pixel(x, y);
+        self.selected_pixel = pixel;
     }
 
+    #[wasm_bindgen(js_name = "pixelChannels")]
     /// Returns the components as a slice.
-    pub fn channels(&self) -> Uint8Array {
-        self.selected_pixel().channels().into()
+    pub fn pixel_channels(&self) -> Uint8Array {
+        self.selected_pixel.channels().into()
     }
 }

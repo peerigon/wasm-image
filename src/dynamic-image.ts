@@ -229,7 +229,7 @@ export class DynamicImage {
   };
 
   getPixel = ({ x, y }: Position) => {
-    return new Pixel(x, y);
+    return new Pixel(this.instance, x, y);
   };
 
   *pixels() {
@@ -238,7 +238,7 @@ export class DynamicImage {
     let y = 0;
 
     while (x < width && y < height) {
-      yield new Pixel(x, y);
+      yield new Pixel(this.instance, x, y);
 
       x++;
 
