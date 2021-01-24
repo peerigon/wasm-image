@@ -2,23 +2,21 @@ use crate::color_type::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
-use image::Rgba;
-use image::{imageops::FilterType, DynamicImage, GenericImageView, ImageOutputFormat, Pixel};
+use image::{imageops::FilterType, DynamicImage, GenericImage, GenericImageView, ImageOutputFormat, Pixel};
 use js_sys::{Uint32Array, Uint8Array};
 use std::convert::TryInto;
+use std::cmp;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 pub struct WasmDynamicImage {
     instance: DynamicImage,
-    selected_pixel: Rgba<u8>,
 }
 
 // Cannot be part of impl WasmDynamicImage because we don't
 // want to expose it to JS land.
 pub fn new(instance: DynamicImage) -> WasmDynamicImage {
     WasmDynamicImage {
-        selected_pixel: instance.get_pixel(0, 0),
         instance,
     }
 }
@@ -331,16 +329,27 @@ impl WasmDynamicImage {
     // }
 
     // --------------------------------------------------------------
+    // Pixel
 
-    #[wasm_bindgen(js_name = "selectPixel")]
-    pub fn select_pixel(&mut self, x: u32, y: u32) {
-        let pixel = self.instance.get_pixel(x, y);
-        self.selected_pixel = pixel;
+    #[wasm_bindgen(js_name = "pixelGetChannels")]
+    /// Returns the color bytes as Uint8Array
+    pub fn pixel_get_channels(&self, x: u32, y: u32) -> Uint8Array {
+        self.instance.get_pixel(x, y).channels().into()
     }
 
-    #[wasm_bindgen(js_name = "pixelChannels")]
-    /// Returns the components as a slice.
-    pub fn pixel_channels(&self) -> Uint8Array {
-        self.selected_pixel.channels().into()
+    #[wasm_bindgen(js_name = "pixelSetChannels")]
+    /// Sets the color bytes as Uint8Array
+    pub fn pixel_set_channels(&mut self, x: u32, y: u32, new_channels: &Uint8Array) {
+        let mut pixel = self.instance.get_pixel(x, y);
+        let current_channels = pixel.channels_mut();
+        let length = cmp::min(current_channels.len(), new_channels.length() as usize);
+        
+        for i in 0..length {
+            current_channels[i] = new_channels.get_index(i as u32);
+        }
+
+        // get_pixel() actually returns a copy of the pixel which is why
+        // we need to put the pixel back again into the image
+        self.instance.put_pixel(x, y, pixel);
     }
 }

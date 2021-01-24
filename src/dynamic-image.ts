@@ -133,6 +133,7 @@ export class DynamicImage {
   };
 
   color = () => {
+    // TODO: Return ColorType?
     return this.instance.color();
   };
 

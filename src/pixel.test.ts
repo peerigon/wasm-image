@@ -1,5 +1,4 @@
 import { DynamicImage } from "./lib";
-import { Pixel } from "./pixel";
 import * as images from "./tests/images";
 
 describe("Pixel", () => {
@@ -20,11 +19,17 @@ describe("Pixel", () => {
     return instance;
   };
 
-  test.only("getChannels()", async () => {
+  test.only("getChannels() & setChannels()", async () => {
     const dynamicImage = await createInstance(images.paths.catJpg);
     const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
-    const channels = pixel.getChannels();
+    let channels = pixel.getChannels();
 
     expect(channels).toMatchObject(Uint8Array.from([142, 152, 115, 255]));
+
+    pixel.setChannels([0, 0]);
+
+    channels = pixel.getChannels();
+
+    expect(channels).toMatchObject(Uint8Array.from([0, 0, 115, 255]));
   });
 });
