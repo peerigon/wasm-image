@@ -362,13 +362,13 @@ impl WasmDynamicImage {
     // fn pixel_apply(&mut self, x: u32, y: u32, f: &js_sys::Function);
 
     // Not implemented
-    // fn map_with_alpha<F, G>(&self, f: F, g: G) -> Self;
+    // fn pixel_map_with_alpha<F, G>(&self, f: F, g: G) -> Self;
 
     // Implemented in JavaScript
-    // fn apply_with_alpha<F, G>(&mut self, f: F, g: G);
+    // fn pixel_apply_with_alpha<F, G>(&mut self, f: F, g: G);
 
-    // /// Apply the function ```f``` to each channel except the alpha channel.
-    // fn map_without_alpha<F>(&self, f: F) -> Self
+    // Not implemented
+    // fn pixel_map_without_alpha<F>(&self, f: F) -> Self
     // where
     //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
     // {
@@ -377,30 +377,44 @@ impl WasmDynamicImage {
     //     this
     // }
 
-    // /// Apply the function ```f``` to each channel except the alpha channel.
-    // /// Works in place.
-    // fn apply_without_alpha<F>(&mut self, f: F)
+    // Implemented in JavaScript
+    // fn pixel_apply_without_alpha<F>(&mut self, f: F)
     // where
     //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
     // {
     //     self.apply_with_alpha(f, |x| x);
     // }
 
-    // /// Apply the function ```f``` to each channel of this pixel and
-    // /// ```other``` pairwise.
-    // fn map2<F>(&self, other: &Self, f: F) -> Self
+    // Not implemented
+    // fn pixel_map2<F>(&self, other: &Self, f: F) -> Self
     // where
     //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
 
-    // /// Apply the function ```f``` to each channel of this pixel and
-    // /// ```other``` pairwise. Works in-place.
-    // fn apply2<F>(&mut self, other: &Self, f: F)
+    // Implemented in JavaScript
+    // fn pixel_apply2<F>(&mut self, other: &Self, f: F)
     // where
     //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
 
-    // /// Invert this pixel
-    // fn invert(&mut self);
+    #[wasm_bindgen(js_name = "pixelInvert")]
+    pub fn pixel_invert(&mut self, x: u32, y: u32) {
+        let mut pixel = self.instance.get_pixel(x, y);
+        
+        pixel.invert();
 
-    // /// Blend the color of a given pixel into ourself, taking into account alpha channels
-    // fn blend(&mut self, other: &Self);
+        // get_pixel() actually returns a copy of the pixel which is why
+        // we need to put the pixel back again into the image
+        self.instance.put_pixel(x, y, pixel);
+    }
+
+    #[wasm_bindgen(js_name = "pixelBlend")]
+    pub fn blend(&mut self, x: u32, y: u32, other_x: u32, other_y: u32) {
+        let mut pixel = self.instance.get_pixel(x, y);
+        let other_pixel = self.instance.get_pixel(other_x, other_y);
+
+        pixel.blend(&other_pixel);
+
+        // get_pixel() actually returns a copy of the pixel which is why
+        // we need to put the pixel back again into the image
+        self.instance.put_pixel(x, y, pixel);
+    }
 }
