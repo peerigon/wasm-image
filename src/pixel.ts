@@ -1,25 +1,25 @@
 import * as wasm from "./wasm";
-import { Position } from "./position";
 
 type ChannelFn = (channel: number) => number;
 
-export class Pixel implements Position {
+export class Pixel {
   // TODO: Add constants
+
   constructor(
-    private readonly instance: wasm.WasmDynamicImage,
-    public readonly x: number,
-    public readonly y: number
+    private wasmDynamicImage: wasm.WasmDynamicImage,
+    private x: number,
+    private y: number
   ) {}
 
   getChannels = () => {
-    return this.instance.pixelGetChannels(this.x, this.y);
+    return this.wasmDynamicImage.pixelGetChannels(this.x, this.y);
   };
 
   setChannels = (channels: Array<number> | Uint8Array) => {
     channels =
       channels instanceof Uint8Array ? channels : Uint8Array.from(channels);
 
-    this.instance.pixelSetChannels(this.x, this.y, channels);
+    this.wasmDynamicImage.pixelSetChannels(this.x, this.y, channels);
   };
 
   apply = (channelFn: ChannelFn) => {
@@ -54,16 +54,28 @@ export class Pixel implements Position {
   ) => {
     const selfChannels = this.getChannels();
     const otherChannels = other.getChannels();
-    const newChannels = selfChannels.map((channel, i) => channelFn(channel, otherChannels[i]));
+    const newChannels = selfChannels.map((channel, i) =>
+      channelFn(channel, otherChannels[i])
+    );
 
     this.setChannels(newChannels);
   };
 
   invert = () => {
-    this.instance.pixelInvert(this.x, this.y);
+    this.wasmDynamicImage.pixelInvert(this.x, this.y);
   };
 
   blend = (other: Pixel) => {
-    this.instance.pixelBlend(this.x, this.y, other.x, other.y);
+    if (this.wasmDynamicImage === other.wasmDynamicImage) {
+      this.wasmDynamicImage.pixelBlendSelf(this.x, this.y, other.x, other.y);
+    } else {
+      this.wasmDynamicImage.pixelBlendOther(
+        this.x,
+        this.y,
+        other.x,
+        other.y,
+        other.wasmDynamicImage
+      );
+    }
   };
 }

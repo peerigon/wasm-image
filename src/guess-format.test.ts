@@ -2,7 +2,7 @@ import { guessFormat, ImageFormat } from "./lib";
 import * as images from "./tests/images";
 
 describe("guessFormat()", () => {
-  const expectFormat = (format: ImageFormat) => (buffer: Buffer) =>{
+  const expectFormat = (format: ImageFormat) => (buffer: Uint8Array) =>{
     expect(guessFormat(buffer)).toBe(format);
   };
 

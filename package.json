@@ -3,7 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build:dev:node": "wasm-pack build --dev --target nodejs"
   },
   "devDependencies": {
     "@types/jest": "^26.0.19",

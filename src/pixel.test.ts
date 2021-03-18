@@ -20,8 +20,8 @@ describe("Pixel", () => {
   };
 
   test("getChannels(), setChannels()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
 
     expect(pixel.getChannels()).toMatchObject(
       Uint8Array.from([142, 152, 115, 255])
@@ -38,8 +38,8 @@ describe("Pixel", () => {
 
   // TODO: Write same test for image with alpha channel
   test("apply(), applyWithAlpha(), applyWithoutAlpha() for image without alpha channel", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
     const channels: Array<number> = [];
 
     pixel.apply((channel) => {
@@ -84,9 +84,9 @@ describe("Pixel", () => {
   });
 
   test("apply2()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
-    const otherPixel = dynamicImage.getPixel({ x: 100, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
+    const otherPixel = image.getPixel({ x: 100, y: 0 });
     const channelTuples: Array<Array<number>> = [];
 
     pixel.apply2(otherPixel, (selfChannel, otherChannel) => {
@@ -105,8 +105,8 @@ describe("Pixel", () => {
   });
 
   test("invert()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
 
     expect(pixel.getChannels()).toMatchObject(
       Uint8Array.from([142, 152, 115, 255])
@@ -120,9 +120,9 @@ describe("Pixel", () => {
   });
 
   test("blend()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
-    const otherPixel = dynamicImage.getPixel({ x: 100, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
+    const otherPixel = image.getPixel({ x: 100, y: 0 });
 
     expect(pixel.getChannels()).toMatchObject(
       Uint8Array.from([142, 152, 115, 255])
@@ -132,6 +132,15 @@ describe("Pixel", () => {
 
     expect(pixel.getChannels()).toMatchObject(
       Uint8Array.from([165, 170, 148, 255])
+    );
+
+    const otherImage = await createInstance(images.paths.catJpg);
+    const pixelFromOtherImage = otherImage.getPixel({ x: 50, y: 0 });
+
+    pixel.blend(pixelFromOtherImage);
+
+    expect(pixel.getChannels()).toMatchObject(
+      Uint8Array.from([150, 163, 120, 255])
     );
   });
 });

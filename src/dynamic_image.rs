@@ -2,10 +2,12 @@ use crate::color_type::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
-use image::{imageops::FilterType, DynamicImage, GenericImage, GenericImageView, ImageOutputFormat, Pixel};
+use image::{
+    imageops::FilterType, DynamicImage, GenericImage, GenericImageView, ImageOutputFormat, Pixel,
+};
 use js_sys::{Uint32Array, Uint8Array};
-use std::convert::TryInto;
 use std::cmp;
+use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -16,9 +18,7 @@ pub struct WasmDynamicImage {
 // Cannot be part of impl WasmDynamicImage because we don't
 // want to expose it to JS land.
 pub fn new(instance: DynamicImage) -> WasmDynamicImage {
-    WasmDynamicImage {
-        instance,
-    }
+    WasmDynamicImage { instance }
 }
 
 #[wasm_bindgen]
@@ -207,26 +207,14 @@ impl WasmDynamicImage {
     //     SubImage::new(self.inner(), x, y, width, height)
     // }
 
-    // Gets a reference to the mutable pixel at location `(x, y)`
-    //
-    // # Panics
-    //
-    // Panics if `(x, y)` is out of bounds.
-    // TODO: Implement
+    // Not implemented
     // pub fn get_pixel_mut(&mut self, x: u32, y: u32) -> &mut Self::Pixel;
 
-    // Put a pixel at location (x, y)
-    //
-    // # Panics
-    //
-    // Panics if `(x, y)` is out of bounds.
-    // TODO: Implement
+    // Implemented in JavaScript
     // fn put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel);
 
     // Not implemented
-    // unsafe fn unsafe_put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel) {
-    //     self.put_pixel(x, y, pixel);
-    // }
+    // unsafe fn unsafe_put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel);
 
     // TODO: Implement
     // pub fn copy_from<O>(&mut self, other: &O, x: u32, y: u32) -> ImageResult<()>
@@ -317,13 +305,12 @@ impl WasmDynamicImage {
 
     #[wasm_bindgen(js_name = "pixelSetChannels")]
     /// Sets the color bytes as Uint8Array
-    pub fn pixel_set_channels(&mut self, x: u32, y: u32, new_channels: &Uint8Array) {
+    pub fn pixel_set_channels(&mut self, x: u32, y: u32, new_channels: &[u8]) {
         let mut pixel = self.instance.get_pixel(x, y);
         let current_channels = pixel.channels_mut();
-        let length = cmp::min(current_channels.len(), new_channels.length() as usize);
-        
+        let length = cmp::min(current_channels.len(), new_channels.len());
         for i in 0..length {
-            current_channels[i] = new_channels.get_index(i as u32);
+            current_channels[i] = new_channels[i];
         }
 
         // get_pixel() actually returns a copy of the pixel which is why
@@ -398,23 +385,50 @@ impl WasmDynamicImage {
     #[wasm_bindgen(js_name = "pixelInvert")]
     pub fn pixel_invert(&mut self, x: u32, y: u32) {
         let mut pixel = self.instance.get_pixel(x, y);
-        
-        pixel.invert();
 
-        // get_pixel() actually returns a copy of the pixel which is why
-        // we need to put the pixel back again into the image
+        pixel.invert();
         self.instance.put_pixel(x, y, pixel);
     }
 
-    #[wasm_bindgen(js_name = "pixelBlend")]
-    pub fn blend(&mut self, x: u32, y: u32, other_x: u32, other_y: u32) {
+    #[wasm_bindgen(js_name = "pixelBlendSelf")]
+    pub fn pixel_blend_self(
+        &mut self,
+        x: u32,
+        y: u32,
+        other_x: u32,
+        other_y: u32,
+    ) {
+        self.pixel_blend(x, y, other_x, other_y, None);
+    }
+
+    #[wasm_bindgen(js_name = "pixelBlendOther")]
+    pub fn pixel_blend_other(
+        &mut self,
+        x: u32,
+        y: u32,
+        other_x: u32,
+        other_y: u32,
+        other_image: &WasmDynamicImage,
+    ) {
+        self.pixel_blend(x, y, other_x, other_y, Some(&other_image));
+    }
+
+    // Would be nice to expose this function directly to JS land
+    // but Option<> is not supported yet.
+    // See https://github.com/rustwasm/wasm-bindgen/issues/2370
+    fn pixel_blend(
+        &mut self,
+        x: u32,
+        y: u32,
+        other_x: u32,
+        other_y: u32,
+        other_image: Option<&WasmDynamicImage>,
+    ) {
+        let other_instance = &other_image.unwrap_or(&self).instance;
+        let other_pixel = other_instance.get_pixel(other_x, other_y);
         let mut pixel = self.instance.get_pixel(x, y);
-        let other_pixel = self.instance.get_pixel(other_x, other_y);
 
         pixel.blend(&other_pixel);
-
-        // get_pixel() actually returns a copy of the pixel which is why
-        // we need to put the pixel back again into the image
         self.instance.put_pixel(x, y, pixel);
     }
 }

@@ -1,4 +1,4 @@
-// TODO: Implement methods from GenericImage- and GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
+// TODO: Implement methods from GenericImage-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
 // TODO: Implement methods from GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImageView.html
 // TODO: Implement methods from SubImage-Trait https://docs.rs/image/0.23.12/image/struct.SubImage.html
 // TODO: Rename DynamicImage to Image?
@@ -10,6 +10,7 @@ import { Dimensions } from "./dimensions";
 import { Bounds } from "./bounds";
 import { Position } from "./position";
 import { Pixel } from "./pixel";
+import { wasmDynamicImage } from "./symbols";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -88,7 +89,11 @@ export type ThumbnailOptions =
     };
 
 export class DynamicImage {
-  protected instance: wasm.WasmDynamicImage;
+  private instance: wasm.WasmDynamicImage;
+  
+  get [wasmDynamicImage]() {
+    return this.instance;
+  }
 
   constructor({ bytes, format }: { bytes: Uint8Array; format?: ImageFormat }) {
     this.instance =
@@ -249,6 +254,10 @@ export class DynamicImage {
       }
     }
   }
+
+  view = () => {
+    // TODO: Add when SubImage-Trait has been implemented
+  };
 
   dispose = () => {
     this.instance.free();
