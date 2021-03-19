@@ -23,6 +23,11 @@ pub fn new(instance: DynamicImage) -> WasmDynamicImage {
 
 #[wasm_bindgen]
 impl WasmDynamicImage {
+    #[wasm_bindgen(js_name = "newRgba8")]
+    pub fn new_rgba8(width: u32, height: u32) -> WasmDynamicImage {
+        WasmDynamicImage { instance: DynamicImage::new_rgba8(width, height) }
+    }
+
     #[wasm_bindgen(js_name = "toBytes")]
     pub fn to_bytes(&self) -> Uint8Array {
         self.instance.as_bytes().into()

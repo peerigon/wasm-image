@@ -10,6 +10,7 @@ use dynamic_image::WasmDynamicImage;
 mod image_format;
 use image_format::WasmImageFormat;
 mod image_output_format;
+mod pixel;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.

@@ -10,7 +10,7 @@ import { Dimensions } from "./dimensions";
 import { Bounds } from "./bounds";
 import { Position } from "./position";
 import { Pixel } from "./pixel";
-import { wasmDynamicImage } from "./symbols";
+import { pixelConstructor, wasmDynamicImage } from "./symbols";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -95,11 +95,19 @@ export class DynamicImage {
     return this.instance;
   }
 
-  constructor({ bytes, format }: { bytes: Uint8Array; format?: ImageFormat }) {
-    this.instance =
-      format === undefined
-        ? wasm.loadFromMemory(bytes)
-        : wasm.loadFromMemoryWithFormat(bytes, format);
+  constructor(options: { bytes: Uint8Array; format?: ImageFormat } | Dimensions) {
+    if ("bytes" in options) {
+      const { bytes, format } = options;
+
+      this.instance =
+        format === undefined
+          ? wasm.loadFromMemory(bytes)
+          : wasm.loadFromMemoryWithFormat(bytes, format);
+    } else {
+      const { width, height } = options;
+
+      this.instance = wasm.WasmDynamicImage.newRgba8(width, height);
+    }
   }
 
   toBytes = (outputFormatOptions?: OutputFormatOptions) => {
@@ -235,7 +243,7 @@ export class DynamicImage {
   };
 
   getPixel = ({ x, y }: Position) => {
-    return new Pixel(this.instance, x, y);
+    return Pixel[pixelConstructor](this, x, y);
   };
 
   *pixels() {
@@ -244,7 +252,7 @@ export class DynamicImage {
     let y = 0;
 
     while (x < width && y < height) {
-      yield new Pixel(this.instance, x, y);
+      yield Pixel[pixelConstructor](this, x, y);
 
       x++;
 
