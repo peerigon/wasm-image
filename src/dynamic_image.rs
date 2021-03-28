@@ -2,6 +2,8 @@ use crate::color_type::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
+#[macro_use]
+use crate::{dynamic_map};
 use image::{
     imageops::FilterType, DynamicImage, GenericImage, GenericImageView, ImageOutputFormat, Pixel,
 };
@@ -305,7 +307,29 @@ impl WasmDynamicImage {
     #[wasm_bindgen(js_name = "pixelGetChannels")]
     /// Returns the color bytes as Uint8Array
     pub fn pixel_get_channels(&self, x: u32, y: u32) -> Uint8Array {
-        self.instance.get_pixel(x, y).channels().into()
+        match &self.instance {
+            DynamicImage::ImageLuma8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageLumaA8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageRgb8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageRgba8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageBgr8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageBgra8(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageLuma16(image) => {
+                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
+            },
+            DynamicImage::ImageLumaA16(image) => {
+                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
+                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) }
+            },
+            DynamicImage::ImageRgb16(image) => {
+                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
+                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) 
+            },
+            DynamicImage::ImageRgba16(image) => {
+                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
+                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) }
+            },
+        }
     }
 
     #[wasm_bindgen(js_name = "pixelSetChannels")]
@@ -436,4 +460,21 @@ impl WasmDynamicImage {
         pixel.blend(&other_pixel);
         self.instance.put_pixel(x, y, pixel);
     }
+
+    // #[wasm_bindgen]
+    // pub fn my_function() -> Uint8Array {
+    //     match some_condition {
+    //         IsU8 => rust_lib_function().into(),
+    //         IsU16 => {
+    //             unsafe { Uint8Array::view(&rust_lib_function().align_to().1) }
+    //         }
+    //     }
+    // }
+}
+
+fn u16_channels_to_vec_u8(channels: &[u16]) -> &[u8] {
+    unsafe {
+        channels.align_to().1
+    }
+    // channels.iter().flat_map(|x| x.to_be_bytes().to_vec()).collect()
 }

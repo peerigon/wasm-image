@@ -1,6 +1,6 @@
 use std::{convert::TryInto, io::Cursor};
 use image::{io::Reader, ImageFormat};
-use js_sys::{Uint32Array};
+use js_sys::{Uint32Array, Uint8Array};
 use wasm_bindgen::prelude::*;
 mod color_type;
 mod errors;
@@ -10,6 +10,7 @@ use dynamic_image::WasmDynamicImage;
 mod image_format;
 use image_format::WasmImageFormat;
 mod image_output_format;
+mod macros;
 mod pixel;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -74,3 +75,10 @@ pub fn load_from_memory_with_format(
 
     Ok(dynamic_image::new(instance))
 }
+
+// #[wasm_bindgen]
+// pub fn test(input: &[u16]) -> Uint8Array {
+//     let a: Vec<u8> = input.iter().flat_map(|x| x.to_be_bytes().to_vec()).collect();
+
+//     unsafe { Uint8Array::view(&a) }
+// }

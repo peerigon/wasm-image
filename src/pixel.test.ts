@@ -20,19 +20,36 @@ describe("Pixel (image)", () => {
     return instance;
   };
 
-  test("getChannels(), setChannels()", async () => {
+  test("getChannels(), setChannels() (8bit)", async () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 0, y: 0 });
 
     expect(pixel.getChannels()).toMatchObject(
-      Uint8Array.from([142, 152, 115, 255])
+      Uint8Array.from([142, 152, 115])
     );
 
     pixel.setChannels([0, 0]);
 
     expect(pixel.getChannels()).toMatchObject(
-      Uint8Array.from([0, 0, 115, 255])
+      Uint8Array.from([0, 0, 115])
     );
+  });
+
+  test.only("getChannels(), setChannels() (16bit)", async () => {
+    const image = await createInstance(images.paths.rgb16bitPng);
+    const pixel = image.getPixel({ x: 0, y: 0 });
+
+    console.log(pixel.getChannels());
+
+    // expect(pixel.getChannels()).toMatchObject(
+    //   Uint8Array.from([142, 152, 115, 255])
+    // );
+
+    // pixel.setChannels([0, 0]);
+
+    // expect(pixel.getChannels()).toMatchObject(
+    //   Uint8Array.from([0, 0, 115, 255])
+    // );
   });
 
   // TODO: Check pixel transformations in actual jpg

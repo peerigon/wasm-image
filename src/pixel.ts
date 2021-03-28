@@ -57,7 +57,20 @@ export class Pixel {
     y: number
   ) => new Pixel(new ImagePixelSource(dynamicImage, x, y));
 
-  getChannels = () => this.source.read();
+  getChannels = () => {
+    const channels = this.source.read();
+    const dataView = new DataView(channels.buffer, channels.byteOffset, channels.byteLength);
+    const length = channels.byteLength / Uint16Array.BYTES_PER_ELEMENT;
+    const uint16Array = new Uint16Array(length);
+
+    for (let i = 0; i < length; i++) {
+      uint16Array[i] = dataView.getUint16(i * Uint16Array.BYTES_PER_ELEMENT, true);
+    }
+
+    console.log(channels, uint16Array);
+
+    return channels;
+  };
 
   setChannels = (channels: Channels) => {
     this.source.write(normalizeChannels(channels));
@@ -205,30 +218,3 @@ class IndependentPixelSource implements PixelSourceCommon {
     this.channels.set(channels.slice(0, length));
   };
 }
-
-// prettier-ignore
-// const dummyBmp = [
-//   // Header field BM
-//   0x42,0x4D,
-//   // Size of BMP
-//   0x48,0x00,0x00,0x00,
-//   // Reserved
-//   0x00,0x00,
-//   // Reserved
-//   0x00,0x00,
-//   // Offset
-//   0x36,0x00,0x00,0x00,
-//   // Size of header
-//   0x28,0x00,0x00,0x00,
-//   // Width
-//   0x05,0x00,0x00,0x00,
-//   // Height
-//   0x01,0x00,0x00,0x00,
-//   // Number of color planes
-//   0x01,0x00,
-//   // Number of bits per pixel
-//   0x18,0x00,0x00,0x00,
-//   0x00,0x00,0x12,0x00,0x00,0x00,0x12,0x0B,0x00,0x00,0x12,0x0B,0x00,0x00,0x00,0x00,
-//   0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,
-//   0xFF,0xFF,0xFF,0xFF,0xFF,0x00,0x00,0x00
-// ];
