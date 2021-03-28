@@ -1,11 +1,14 @@
-import { Channels, initializeChannels, normalizeChannels } from "./channels";
+import { Channel, Channels, ChannelsInput, channelsToU16Array, channelsToU8Array, normalizeChannels } from "./channels";
 import { DynamicImage } from "./dynamic-image";
 import { pixelConstructor, wasmDynamicImage } from "./symbols";
 import * as wasm from "./wasm";
 
-type ChannelFn = (channel: number) => number;
+
+
+type ChannelFn = (channel: Channel) => Channel;
 type TempPixelSourceIndex = 0 | 1;
 
+// TODO: Enable PixelDepth.Bit16
 let tempPixelSources: undefined | [ImagePixelSource, ImagePixelSource];
 const doNothing = () => {};
 
@@ -45,10 +48,8 @@ export class Pixel {
     return this.source.y;
   }
 
-  static fromChannels = (channels: Channels) => {
-    const normalizedChannels = initializeChannels(channels);
-
-    return new Pixel(new IndependentPixelSource(normalizedChannels));
+  static fromChannels = (channels: ChannelsInput) => {
+    return new Pixel(new IndependentPixelSource(normalizeChannels(channels)));
   };
 
   static [pixelConstructor] = (
@@ -59,6 +60,7 @@ export class Pixel {
 
   getChannels = () => {
     const channels = this.source.read();
+
     const dataView = new DataView(channels.buffer, channels.byteOffset, channels.byteLength);
     const length = channels.byteLength / Uint16Array.BYTES_PER_ELEMENT;
     const uint16Array = new Uint16Array(length);
@@ -67,31 +69,29 @@ export class Pixel {
       uint16Array[i] = dataView.getUint16(i * Uint16Array.BYTES_PER_ELEMENT, true);
     }
 
-    console.log(channels, uint16Array);
-
     return channels;
   };
 
   setChannels = (channels: Channels) => {
-    this.source.write(normalizeChannels(channels));
+    this.source.write(channels);
   };
 
   map = (channelFn: ChannelFn) => {
-    const newChannels = this.getChannels().map((channel) => channelFn(channel));
+    const newChannels = this.getChannels().map((channel: Channel) => channelFn(channel));
 
     return new Pixel(new IndependentPixelSource(newChannels));
   };
 
   apply = (channelFn: ChannelFn) => {
-    const newChannels = this.getChannels().map((channel) => channelFn(channel));
+    const newChannels = this.getChannels().map((channel: Channel) => channelFn(channel));
 
     this.setChannels(newChannels);
   };
 
   applyWithAlpha = (colorChannelFn: ChannelFn, alphaChannelFn: ChannelFn) => {
     const channels = this.getChannels();
-    const newChannels = channels.map((channel, i) => {
-      return i === channels.length - 1
+    const newChannels = channels.map((channel: Channel, index: number) => {
+      return index === channels.length - 1
         ? alphaChannelFn(channel)
         : colorChannelFn(channel);
     });
@@ -101,7 +101,7 @@ export class Pixel {
 
   applyWithoutAlpha = (colorChannelFn: ChannelFn) => {
     const channelsWithoutAlpha = this.getChannels().slice(0, -1);
-    const newChannels = channelsWithoutAlpha.map((channel) =>
+    const newChannels = channelsWithoutAlpha.map((channel: Channel) =>
       colorChannelFn(channel)
     );
 
@@ -114,8 +114,8 @@ export class Pixel {
   ) => {
     const selfChannels = this.getChannels();
     const otherChannels = other.getChannels();
-    const newChannels = selfChannels.map((channel, i) =>
-      channelFn(channel, otherChannels[i])
+    const newChannels = selfChannels.map((channel: Channel, index: number) =>
+      channelFn(channel, otherChannels[index])
     );
 
     this.setChannels(newChannels);
@@ -179,11 +179,14 @@ enum PixelSourceType {
   Independent = "Independent",
 }
 
+// This is intentionally not generic because we want to make it as easy as possible
+// to switch between pixel depths without affecting the exposed interface.
+// Since all TypedArrays share a common interface, this should be possible.
 type PixelSourceCommon = {
   x: number;
   y: number;
-  read(): Uint8Array;
-  write(channels: Uint8Array): void;
+  read(): Channels;
+  write(channels: ChannelsInput): void;
 };
 
 type PixelSource = ImagePixelSource | IndependentPixelSource;
@@ -197,10 +200,34 @@ class ImagePixelSource implements PixelSourceCommon {
     this[wasmDynamicImage] = dynamicImage[wasmDynamicImage];
   }
 
-  read = () => this[wasmDynamicImage].pixelGetChannels(this.x, this.y);
+  read: PixelSourceCommon["read"] = () => {
+    switch (this[wasmDynamicImage].color()) {
+      case wasm.WasmColorType.L16:
+      case wasm.WasmColorType.La16:
+      case wasm.WasmColorType.Rgb16:
+      case wasm.WasmColorType.Rgba16: {
+        return this[wasmDynamicImage].pixelGetChannels16(this.x, this.y);
+      }
+      default: {
+        return this[wasmDynamicImage].pixelGetChannels8(this.x, this.y);
+      }
+    }
+  };
 
-  write = (channels: Uint8Array) =>
-    this[wasmDynamicImage].pixelSetChannels(this.x, this.y, channels);
+  write: PixelSourceCommon["write"] = (channels) => {
+    switch (this[wasmDynamicImage].color()) {
+      case wasm.WasmColorType.L16:
+      case wasm.WasmColorType.La16:
+      case wasm.WasmColorType.Rgb16:
+      case wasm.WasmColorType.Rgba16: {
+        this[wasmDynamicImage].pixelSetChannels16(this.x, this.y, channelsToU16Array(channels));
+        break;
+      }
+      default: {
+        this[wasmDynamicImage].pixelSetChannels8(this.x, this.y, channelsToU8Array(channels));
+      }
+    }
+  }
 }
 
 class IndependentPixelSource implements PixelSourceCommon {
@@ -208,11 +235,11 @@ class IndependentPixelSource implements PixelSourceCommon {
   x = 0;
   y = 0;
 
-  constructor(private channels: Uint8Array) {}
+  constructor(private channels: Channels) {}
 
-  read = () => this.channels;
+  read: PixelSourceCommon["read"] = () => this.channels;
 
-  write = (channels: Uint8Array) => {
+  write: PixelSourceCommon["write"] = (channels) => {
     const length = Math.min(this.channels.length, channels.length);
 
     this.channels.set(channels.slice(0, length));

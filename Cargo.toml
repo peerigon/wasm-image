@@ -19,7 +19,7 @@ default = ["console_error_panic_hook"]
 
 [dependencies]
 image = {version = "0.23.12", default-features = false, features = ["png", "jpeg", "gif", "webp", "tiff", "bmp", "ico", "avif"]}
-js-sys = "0.3.46"
+js-sys = "0.3.49"
 wasm-bindgen = "0.2.69"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
@@ -28,7 +28,7 @@ wasm-bindgen = "0.2.69"
 # code size when deploying.
 console_error_panic_hook = {version = "0.1.6", optional = true}
 
-web-sys = {version = "0.3.46", features = ["console"]}
+web-sys = {version = "0.3.49", features = ["console"]}
 
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. It is slower than the default

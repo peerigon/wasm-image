@@ -2,12 +2,10 @@ use crate::color_type::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
-#[macro_use]
-use crate::{dynamic_map};
 use image::{
     imageops::FilterType, DynamicImage, GenericImage, GenericImageView, ImageOutputFormat, Pixel,
 };
-use js_sys::{Uint32Array, Uint8Array};
+use js_sys::{Uint32Array, Uint16Array, Uint8Array};
 use std::cmp;
 use std::convert::TryInto;
 use wasm_bindgen::prelude::*;
@@ -302,11 +300,40 @@ impl WasmDynamicImage {
     // }
 
     // --------------------------------------------------------------
-    // Pixel
+    // ColorType
+    // --------------------------------------------------------------
 
     #[wasm_bindgen(js_name = "pixelGetChannels")]
-    /// Returns the color bytes as Uint8Array
-    pub fn pixel_get_channels(&self, x: u32, y: u32) -> Uint8Array {
+    pub fn color_type_bytes_per_pixel(&self) -> u8 {
+        self.instance.color().bytes_per_pixel()
+    }
+
+    #[wasm_bindgen(js_name = "colorTypeHasAlpha")]
+    pub fn color_type_has_alpha(&self) -> bool {
+        self.instance.color().has_alpha()
+    }
+
+    #[wasm_bindgen(js_name = "colorTypeHasColor")]
+    pub fn color_type_has_color(&self) -> bool {
+        self.instance.color().has_color()
+    }
+
+    #[wasm_bindgen(js_name = "colorTypeBitsPerPixel")]
+    pub fn color_type_bits_per_pixel(&self) -> u16 {
+        self.instance.color().bits_per_pixel()
+    }
+
+    #[wasm_bindgen(js_name = "colorTypeChannelCount")]
+    pub fn color_type_channel_count(self) -> u8 {
+        self.instance.color().channel_count()
+    }
+
+    // --------------------------------------------------------------
+    // Pixel
+    // --------------------------------------------------------------
+
+    #[wasm_bindgen(js_name = "pixelGetChannels8")]
+    pub fn pixel_get_channels_8(&self, x: u32, y: u32) -> Uint8Array {
         match &self.instance {
             DynamicImage::ImageLuma8(image) => image.get_pixel(x, y).channels().into(),
             DynamicImage::ImageLumaA8(image) => image.get_pixel(x, y).channels().into(),
@@ -314,37 +341,59 @@ impl WasmDynamicImage {
             DynamicImage::ImageRgba8(image) => image.get_pixel(x, y).channels().into(),
             DynamicImage::ImageBgr8(image) => image.get_pixel(x, y).channels().into(),
             DynamicImage::ImageBgra8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageLuma16(image) => {
-                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
-            },
-            DynamicImage::ImageLumaA16(image) => {
-                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
-                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) }
-            },
-            DynamicImage::ImageRgb16(image) => {
-                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
-                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) 
-            },
-            DynamicImage::ImageRgba16(image) => {
-                unsafe { Uint8Array::view(&image.get_pixel(x, y).channels().align_to().1) }
-                // unsafe { Uint8Array::view(&u16_channels_to_vec_u8(image.get_pixel(x, y).channels())) }
-            },
+            _ => {
+                panic!("Please use pixelGetChannels16");
+            }
         }
     }
 
-    #[wasm_bindgen(js_name = "pixelSetChannels")]
-    /// Sets the color bytes as Uint8Array
-    pub fn pixel_set_channels(&mut self, x: u32, y: u32, new_channels: &[u8]) {
-        let mut pixel = self.instance.get_pixel(x, y);
-        let current_channels = pixel.channels_mut();
+    #[wasm_bindgen(js_name = "pixelGetChannels16")]
+    pub fn pixel_get_channels_16(&self, x: u32, y: u32) -> Uint16Array {
+        match &self.instance {
+            DynamicImage::ImageLuma16(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageLumaA16(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageRgb16(image) => image.get_pixel(x, y).channels().into(),
+            DynamicImage::ImageRgba16(image) => image.get_pixel(x, y).channels().into(),
+            _ => {
+                panic!("Please use pixelGetChannels8");
+            }
+        }
+    }
+
+    #[wasm_bindgen(js_name = "pixelSetChannels8")]
+    pub fn pixel_set_channels_8(&mut self, x: u32, y: u32, new_channels: &[u8]) {
+        let current_channels = match &mut self.instance {
+            DynamicImage::ImageLuma8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageLumaA8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageRgb8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageRgba8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageBgr8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageBgra8(image) => image.get_pixel_mut(x, y).channels_mut(),
+            _ => {
+                panic!("Please use pixelSetChannels16");
+            }
+        };
         let length = cmp::min(current_channels.len(), new_channels.len());
         for i in 0..length {
             current_channels[i] = new_channels[i];
         }
+    }
 
-        // get_pixel() actually returns a copy of the pixel which is why
-        // we need to put the pixel back again into the image
-        self.instance.put_pixel(x, y, pixel);
+    #[wasm_bindgen(js_name = "pixelSetChannels16")]
+    pub fn pixel_set_channels_16(&mut self, x: u32, y: u32, new_channels: &[u16]) {
+        let current_channels = match &mut self.instance {
+            DynamicImage::ImageLuma16(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageLumaA16(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageRgb16(image) => image.get_pixel_mut(x, y).channels_mut(),
+            DynamicImage::ImageRgba16(image) => image.get_pixel_mut(x, y).channels_mut(),
+            _ => {
+                panic!("Please use pixelSetChannels8");
+            }
+        };
+        let length = cmp::min(current_channels.len(), new_channels.len());
+        for i in 0..length {
+            current_channels[i] = new_channels[i];
+        }
     }
 
     // Not implemented
@@ -460,21 +509,4 @@ impl WasmDynamicImage {
         pixel.blend(&other_pixel);
         self.instance.put_pixel(x, y, pixel);
     }
-
-    // #[wasm_bindgen]
-    // pub fn my_function() -> Uint8Array {
-    //     match some_condition {
-    //         IsU8 => rust_lib_function().into(),
-    //         IsU16 => {
-    //             unsafe { Uint8Array::view(&rust_lib_function().align_to().1) }
-    //         }
-    //     }
-    // }
-}
-
-fn u16_channels_to_vec_u8(channels: &[u16]) -> &[u8] {
-    unsafe {
-        channels.align_to().1
-    }
-    // channels.iter().flat_map(|x| x.to_be_bytes().to_vec()).collect()
 }

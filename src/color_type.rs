@@ -3,29 +3,18 @@ use std::convert::TryFrom;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Copy, PartialEq, Eq, Debug, Clone, Hash)]
 pub enum WasmColorType {
-    /// Pixel is 8-bit luminance
     L8,
-    /// Pixel is 8-bit luminance with an alpha channel
     La8,
-    /// Pixel contains 8-bit R, G and B channels
     Rgb8,
-    /// Pixel is 8-bit RGB with an alpha channel
     Rgba8,
 
-    /// Pixel is 16-bit luminance
     L16,
-    /// Pixel is 16-bit luminance with an alpha channel
     La16,
-    /// Pixel is 16-bit RGB
     Rgb16,
-    /// Pixel is 16-bit RGBA
     Rgba16,
 
-    /// Pixel contains 8-bit B, G and R channels
     Bgr8,
-    /// Pixel is 8-bit BGR with an alpha channel
     Bgra8,
 }
 
