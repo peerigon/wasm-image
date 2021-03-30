@@ -12,6 +12,7 @@ import { Bounds } from "./bounds";
 import { Position } from "./position";
 import { Pixel } from "./pixel";
 import { pixelConstructor, wasmDynamicImage } from "./symbols";
+import { Color } from "./color";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -147,8 +148,7 @@ export class DynamicImage {
   };
 
   color = () => {
-    // TODO: Return ColorType?
-    return this.instance.color();
+    return new Color(this);
   };
 
   grayscale = () => {

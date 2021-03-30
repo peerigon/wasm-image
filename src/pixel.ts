@@ -59,20 +59,10 @@ export class Pixel {
   ) => new Pixel(new ImagePixelSource(dynamicImage, x, y));
 
   getChannels = () => {
-    const channels = this.source.read();
-
-    const dataView = new DataView(channels.buffer, channels.byteOffset, channels.byteLength);
-    const length = channels.byteLength / Uint16Array.BYTES_PER_ELEMENT;
-    const uint16Array = new Uint16Array(length);
-
-    for (let i = 0; i < length; i++) {
-      uint16Array[i] = dataView.getUint16(i * Uint16Array.BYTES_PER_ELEMENT, true);
-    }
-
-    return channels;
+    return this.source.read();
   };
 
-  setChannels = (channels: Channels) => {
+  setChannels = (channels: ChannelsInput) => {
     this.source.write(channels);
   };
 

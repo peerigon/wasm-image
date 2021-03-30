@@ -35,21 +35,19 @@ describe("Pixel (image)", () => {
     );
   });
 
-  test.only("getChannels(), setChannels() (16bit)", async () => {
+  test("getChannels(), setChannels() (16bit)", async () => {
     const image = await createInstance(images.paths.rgb16bitPng);
     const pixel = image.getPixel({ x: 0, y: 0 });
 
-    console.log(pixel.getChannels());
+    expect(pixel.getChannels()).toMatchObject(
+      Uint16Array.from([65535, 25702, 2])
+    );
 
-    // expect(pixel.getChannels()).toMatchObject(
-    //   Uint8Array.from([142, 152, 115, 255])
-    // );
+    pixel.setChannels([0, 0]);
 
-    // pixel.setChannels([0, 0]);
-
-    // expect(pixel.getChannels()).toMatchObject(
-    //   Uint8Array.from([0, 0, 115, 255])
-    // );
+    expect(pixel.getChannels()).toMatchObject(
+      Uint16Array.from([0, 0, 2])
+    );
   });
 
   // TODO: Check pixel transformations in actual jpg
@@ -66,9 +64,8 @@ describe("Pixel (image)", () => {
       return 0;
     });
 
-    expect(channels).toMatchObject([142, 152, 115, 255]);
-    // The underlying image has no alpha channel which is why 255 is returned again
-    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([0, 0, 0, 255]));
+    expect(channels).toMatchObject([142, 152, 115]);
+    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([0, 0, 0]));
 
     channels.length = 0;
 
@@ -86,8 +83,8 @@ describe("Pixel (image)", () => {
       }
     );
 
-    expect(channels).toMatchObject([0, 0, 0, 255]);
-    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([1, 1, 1, 255]));
+    expect(channels).toMatchObject([0, 0, 0]);
+    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([1, 1, 1]));
 
     channels.length = 0;
 
@@ -98,7 +95,7 @@ describe("Pixel (image)", () => {
     });
 
     expect(channels).toMatchObject([1, 1, 1]);
-    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([2, 2, 2, 255]));
+    expect(pixel.getChannels()).toMatchObject(Uint8Array.from([2, 2, 2]));
   });
 
   test("apply2()", async () => {

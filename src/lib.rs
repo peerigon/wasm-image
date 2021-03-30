@@ -2,7 +2,7 @@ use std::{convert::TryInto, io::Cursor};
 use image::{io::Reader, ImageFormat};
 use js_sys::{Uint32Array};
 use wasm_bindgen::prelude::*;
-mod color_type;
+mod color;
 mod errors;
 mod filter_type;
 mod dynamic_image;
