@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 
-import { ColorType, DynamicImage, ImageFormat, OutputFormat } from "./lib";
+import { Color } from "./color";
+import { DynamicImage, ImageFormat, OutputFormat } from "./lib";
 import { Pixel } from "./pixel";
 import * as images from "./tests/images";
 import * as snapshots from "./tests/snapshots";
@@ -98,16 +99,10 @@ describe("DynamicImage", () => {
     });
   });
 
-  test("color()", async () => {
-    const [catJpg, ballPng, basi2c08Png] = await Promise.all(
-      [images.paths.catJpg, images.paths.ballPng, images.paths.basi2c08Png].map(
-        createInstance
-      )
-    );
+  test("color", async () => {
+    const dynamicImage = await createInstance(images.paths.catJpg);
 
-    expect(catJpg.color()).toBe(ColorType.Rgb8);
-    expect(ballPng.color()).toBe(ColorType.Rgba8);
-    expect(basi2c08Png.color()).toBe(ColorType.Rgb8);
+    expect(dynamicImage.color).toBeInstanceOf(Color);
   });
 
   test("grayscale()", async () => {
@@ -412,10 +407,7 @@ describe("DynamicImage", () => {
 
   test("dimensions(), width(), height(), bounds(), inBounds()", async () => {
     const dynamicImage = await createInstance(images.paths.catJpg);
-    const dimensions = dynamicImage.dimensions();
-    const width = dynamicImage.width();
-    const height = dynamicImage.height();
-    const bounds = dynamicImage.bounds();
+    const { dimensions, width, height, bounds } = dynamicImage;
 
     expect(dimensions).toMatchObject({ width: 320, height: 240 });
     expect(width).toBe(320);
@@ -442,20 +434,20 @@ describe("DynamicImage", () => {
     let pixel;
 
     expect.assertions(totalPixelCount + 5);
-    
+
     for (pixel of dynamicImage.pixels()) {
       expect(pixel).toBeInstanceOf(Pixel);
       if (i === 0) {
-        expect(pixel).toMatchObject({x: 0, y: 0});
+        expect(pixel).toMatchObject({ x: 0, y: 0 });
       } else if (i === 319) {
-        expect(pixel).toMatchObject({x: 319, y: 0});
+        expect(pixel).toMatchObject({ x: 319, y: 0 });
       } else if (i === 320) {
-        expect(pixel).toMatchObject({x: 0, y: 1});
+        expect(pixel).toMatchObject({ x: 0, y: 1 });
       }
       i++;
     }
 
     expect(i).toBe(totalPixelCount);
-    expect(pixel).toMatchObject({x: 319, y: 239});
+    expect(pixel).toMatchObject({ x: 319, y: 239 });
   });
 });

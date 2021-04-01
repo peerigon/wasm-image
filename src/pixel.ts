@@ -38,14 +38,18 @@ const getTempPixelSource = (index: TempPixelSourceIndex) => {
 export class Pixel {
   // TODO: Add constants
 
-  private constructor(private source: PixelSource) {}
+  #source: PixelSource;
+
+  private constructor(source: PixelSource) {
+    this.#source = source;
+  }
 
   private get x() {
-    return this.source.x;
+    return this.#source.x;
   }
 
   private get y() {
-    return this.source.y;
+    return this.#source.y;
   }
 
   static fromChannels = (channels: ChannelsInput) => {
@@ -59,11 +63,11 @@ export class Pixel {
   ) => new Pixel(new ImagePixelSource(dynamicImage, x, y));
 
   getChannels = () => {
-    return this.source.read();
+    return this.#source.read();
   };
 
   setChannels = (channels: ChannelsInput) => {
-    this.source.write(channels);
+    this.#source.write(channels);
   };
 
   map = (channelFn: ChannelFn) => {
@@ -112,7 +116,7 @@ export class Pixel {
   };
 
   invert = () => {
-    const [image, bringBack] = this.borrowWasmDynamicImage(0);
+    const [image, bringBack] = this.#borrowWasmDynamicImage(0);
 
     image.pixelInvert(this.x, this.y);
     bringBack();
@@ -120,11 +124,11 @@ export class Pixel {
 
   blend = (other: Pixel) => {
     if (
-      this.source.type === PixelSourceType.Image &&
-      other.source.type === PixelSourceType.Image &&
-      this.source[wasmDynamicImage] === other.source[wasmDynamicImage]
+      this.#source.type === PixelSourceType.Image &&
+      other.#source.type === PixelSourceType.Image &&
+      this.#source[wasmDynamicImage] === other.#source[wasmDynamicImage]
     ) {
-      this.source[wasmDynamicImage].pixelBlendSelf(
+      this.#source[wasmDynamicImage].pixelBlendSelf(
         this.x,
         this.y,
         other.x,
@@ -134,8 +138,8 @@ export class Pixel {
       return;
     }
 
-    const [thisImage, bringThisImageBack] = this.borrowWasmDynamicImage(0);
-    const [otherImage, bringOtherImageBack] = other.borrowWasmDynamicImage(1);
+    const [thisImage, bringThisImageBack] = this.#borrowWasmDynamicImage(0);
+    const [otherImage, bringOtherImageBack] = other.#borrowWasmDynamicImage(1);
 
     thisImage.pixelBlendOther(this.x, this.y, other.x, other.y, otherImage);
 
@@ -143,22 +147,22 @@ export class Pixel {
     bringOtherImageBack();
   };
 
-  private borrowWasmDynamicImage = (index: TempPixelSourceIndex) => {
-    if (this.source.type === PixelSourceType.Image) {
-      return [this.source[wasmDynamicImage], doNothing] as const;
+  #borrowWasmDynamicImage = (index: TempPixelSourceIndex) => {
+    if (this.#source.type === PixelSourceType.Image) {
+      return [this.#source[wasmDynamicImage], doNothing] as const;
     }
 
-    const originalSource = this.source;
+    const originalSource = this.#source;
     const tempSource = getTempPixelSource(index);
 
     tempSource.write(originalSource.read());
-    this.source = tempSource;
+    this.#source = tempSource;
 
     return [
       tempSource[wasmDynamicImage],
       () => {
         originalSource.write(tempSource.read());
-        this.source = originalSource;
+        this.#source = originalSource;
       },
     ] as const;
   };
@@ -175,8 +179,8 @@ enum PixelSourceType {
 type PixelSourceCommon = {
   x: number;
   y: number;
-  read(): Channels;
-  write(channels: ChannelsInput): void;
+  read: () => Channels;
+  write: (channels: ChannelsInput) => void;
 };
 
 type PixelSource = ImagePixelSource | IndependentPixelSource;
@@ -191,7 +195,7 @@ class ImagePixelSource implements PixelSourceCommon {
   }
 
   read: PixelSourceCommon["read"] = () => {
-    switch (this[wasmDynamicImage].color()) {
+    switch (this[wasmDynamicImage].colorType()) {
       case wasm.WasmColorType.L16:
       case wasm.WasmColorType.La16:
       case wasm.WasmColorType.Rgb16:
@@ -205,7 +209,7 @@ class ImagePixelSource implements PixelSourceCommon {
   };
 
   write: PixelSourceCommon["write"] = (channels) => {
-    switch (this[wasmDynamicImage].color()) {
+    switch (this[wasmDynamicImage].colorType()) {
       case wasm.WasmColorType.L16:
       case wasm.WasmColorType.La16:
       case wasm.WasmColorType.Rgb16:

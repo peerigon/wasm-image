@@ -2,6 +2,7 @@
 // TODO: Implement methods from GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImageView.html
 // TODO: Implement methods from SubImage-Trait https://docs.rs/image/0.23.12/image/struct.SubImage.html
 // TODO: Hint https://stackoverflow.com/questions/51544240/how-can-i-free-memory-allocated-by-rust-code-exposed-in-webassembly
+// TODO: Use getter and setters?
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
 
@@ -91,30 +92,33 @@ export type ThumbnailOptions =
     };
 
 export class DynamicImage {
-  private instance: wasm.WasmDynamicImage;
-  
-  get [wasmDynamicImage]() {
-    return this.instance;
-  }
+  [wasmDynamicImage]: wasm.WasmDynamicImage;
+
+  #color: Color;
 
   constructor(options: { bytes: Uint8Array; format?: ImageFormat } | Dimensions) {
     if ("bytes" in options) {
       const { bytes, format } = options;
 
-      this.instance =
+      this[wasmDynamicImage] =
         format === undefined
           ? wasm.loadFromMemory(bytes)
           : wasm.loadFromMemoryWithFormat(bytes, format);
     } else {
       const { width, height } = options;
 
-      this.instance = wasm.WasmDynamicImage.newRgba8(width, height);
+      this[wasmDynamicImage] = wasm.WasmDynamicImage.newRgba8(width, height);
     }
+    this.#color = new Color(this);
   }
+
+  get color() {
+    return this.#color;
+  };
 
   toBytes = (outputFormatOptions?: OutputFormatOptions) => {
     if (outputFormatOptions === undefined) {
-      return this.instance.toBytes();
+      return this[wasmDynamicImage].toBytes();
     }
 
     const format = mapOutputFormatNameToWasmImageOutputFormat(
@@ -125,10 +129,10 @@ export class DynamicImage {
       case OutputFormat.Jpeg: {
         const { quality = 100 } = outputFormatOptions;
 
-        return this.instance.toFormatJpeg(quality);
+        return this[wasmDynamicImage].toFormatJpeg(quality);
       }
       default: {
-        return this.instance.toFormat(format);
+        return this[wasmDynamicImage].toFormat(format);
       }
     }
   };
@@ -144,103 +148,99 @@ export class DynamicImage {
     width: number;
     height: number;
   }) => {
-    this.instance.crop(x, y, width, height);
-  };
-
-  color = () => {
-    return new Color(this);
+    this[wasmDynamicImage].crop(x, y, width, height);
   };
 
   grayscale = () => {
-    this.instance.grayscale();
+    this[wasmDynamicImage].grayscale();
   };
 
   invert = () => {
-    this.instance.invert();
+    this[wasmDynamicImage].invert();
   };
 
   resize = ({ width, height, filter = FilterType.Lanczos3 }: ResizeOptions) => {
     if (width !== undefined && height !== undefined) {
-      this.instance.resizeExact(width, height, filter);
+      this[wasmDynamicImage].resizeExact(width, height, filter);
     } else {
-      this.instance.resize(width ?? U32_MAX, height ?? U32_MAX, filter);
+      this[wasmDynamicImage].resize(width ?? U32_MAX, height ?? U32_MAX, filter);
     }
   };
 
   thumbnail = ({ width, height }: ThumbnailOptions) => {
     if (width !== undefined && height !== undefined) {
-      this.instance.thumbnailExact(width, height);
+      this[wasmDynamicImage].thumbnailExact(width, height);
     } else {
-      this.instance.thumbnail(width ?? U32_MAX, height ?? U32_MAX);
+      this[wasmDynamicImage].thumbnail(width ?? U32_MAX, height ?? U32_MAX);
     }
   };
 
   blur = (sigma: number) => {
-    this.instance.blur(sigma);
+    this[wasmDynamicImage].blur(sigma);
   };
 
   unsharpen = (sigma: number, threshold: number) => {
-    this.instance.unsharpen(sigma, threshold);
+    this[wasmDynamicImage].unsharpen(sigma, threshold);
   };
 
   filter3x3 = (kernel: Float32Array) => {
-    this.instance.filter3x3(kernel);
+    this[wasmDynamicImage].filter3x3(kernel);
   };
 
   adjustContrast = (contrast: number) => {
-    this.instance.adjustContrast(contrast);
+    this[wasmDynamicImage].adjustContrast(contrast);
   };
 
   brighten = (value: number) => {
-    this.instance.brighten(value);
+    this[wasmDynamicImage].brighten(value);
   };
 
   huerotate = (degree: number) => {
-    this.instance.huerotate(degree);
+    this[wasmDynamicImage].huerotate(degree);
   };
 
   flipv = () => {
-    this.instance.flipv();
+    this[wasmDynamicImage].flipv();
   };
 
   fliph = () => {
-    this.instance.fliph();
+    this[wasmDynamicImage].fliph();
   };
 
   rotate90 = () => {
-    this.instance.rotate90();
+    this[wasmDynamicImage].rotate90();
   };
 
   rotate180 = () => {
-    this.instance.rotate180();
+    this[wasmDynamicImage].rotate180();
   };
 
   rotate270 = () => {
-    this.instance.rotate270();
+    this[wasmDynamicImage].rotate270();
   };
 
-  dimensions = (): Dimensions => {
-    const [width, height] = this.instance.dimensions();
+  get dimensions(): Dimensions {
+    const [width, height] = this[wasmDynamicImage].dimensions();
 
     return { width, height };
   };
 
-  width = () => {
-    return this.instance.width();
+  get width() {
+    return this[wasmDynamicImage].width();
   };
 
-  height = () => {
-    return this.instance.height();
+  get height() {
+    return this[wasmDynamicImage].height();
   };
 
-  bounds = (): Bounds => {
-    const [x, y, width, height] = this.instance.bounds();
+  get bounds(): Bounds {
+    const [x, y, width, height] = this[wasmDynamicImage].bounds();
 
     return { x, y, width, height };
   };
 
   inBounds = ({ x, y }: Position) => {
-    return this.instance.inBounds(x, y);
+    return this[wasmDynamicImage].inBounds(x, y);
   };
 
   getPixel = ({ x, y }: Position) => {
@@ -248,7 +248,7 @@ export class DynamicImage {
   };
 
   *pixels() {
-    const { width, height } = this.dimensions();
+    const { width, height } = this.dimensions;
     let x = 0;
     let y = 0;
 
@@ -269,6 +269,6 @@ export class DynamicImage {
   };
 
   dispose = () => {
-    this.instance.free();
+    this[wasmDynamicImage].free();
   };
 }

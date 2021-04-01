@@ -8,12 +8,32 @@ export type ColorType = wasm.WasmColorType;
 export class Color {
 
     [wasmDynamicImage]: wasm.WasmDynamicImage;
-    
-    get type(): ColorType {
-        return this[wasmDynamicImage].colorType();
-    }
 
     constructor(dynamicImage: DynamicImage) {
         this[wasmDynamicImage] = dynamicImage[wasmDynamicImage];
     }
+
+    get type(): ColorType {
+        return this[wasmDynamicImage].colorType();
+    };
+
+    get bytesPerPixel() {
+        return this[wasmDynamicImage].colorBytesPerPixel();
+    };
+
+    get hasAlpha() {
+        return this[wasmDynamicImage].colorHasAlpha();
+    };
+
+    get hasColor() {
+        return this[wasmDynamicImage].colorHasColor();
+    };
+
+    get bitsPerPixel() {
+        return this[wasmDynamicImage].colorBitsPerPixel();
+    };
+
+    get channelCount() {
+        return this[wasmDynamicImage].colorChannelCount();
+    };
 }
