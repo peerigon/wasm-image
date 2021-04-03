@@ -42,6 +42,15 @@ describe("Pixel (image)", () => {
     expect(pixel.channels).toMatchObject(Uint16Array.from([0, 0, 2]));
   });
 
+  test("color", async () => {
+    const image = await createInstance(images.paths.rgb16bitPng);
+    const pixel = image.getPixel({ x: 0, y: 0 });
+    const color = pixel.color;
+
+    expect(color.type).toBe(ColorType.Rgb16);
+    expect(color.channelCount).toBe(3);
+  });
+
   // TODO: Check pixel transformations in actual jpg
 
   test("apply() without alpha channel", async () => {

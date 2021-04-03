@@ -20,7 +20,7 @@ const tempPixelSources = new Map<
 >();
 const doNothing = () => {};
 
-const getTempPixelSource = (
+const getTempImagePixelSource = (
   colorType: ColorType,
   index: TempPixelSourceIndex
 ) => {
@@ -54,14 +54,6 @@ export class Pixel {
 
   #source: PixelSource;
 
-  get x() {
-    return this.#source.x;
-  }
-
-  get y() {
-    return this.#source.y;
-  }
-
   private constructor(source: PixelSource) {
     this.#source = source;
   }
@@ -78,12 +70,24 @@ export class Pixel {
     y: number
   ) => new Pixel(new ImagePixelSource(dynamicImage, x, y));
 
+  get x() {
+    return this.#source.x;
+  }
+
+  get y() {
+    return this.#source.y;
+  }
+
   set channels(channels: Channels) {
     this.#source.write(channels);
   }
 
   get channels(): Channels {
     return this.#source.read();
+  }
+
+  get color() {
+    return this.#source[symbols.dynamicImage].color;
   }
 
   map = (
@@ -182,7 +186,7 @@ export class Pixel {
     }
 
     const originalSource = this.#source;
-    const tempSource = getTempPixelSource(
+    const tempSource = getTempImagePixelSource(
       originalSource[symbols.dynamicImage].color.type,
       index
     );
@@ -278,7 +282,7 @@ class IndependentPixelSource extends CommonPixelSource {
   #channels: Channels;
 
   constructor(colorType: ColorType, channels: Channels) {
-    super(getTempPixelSource(colorType, 0)[symbols.dynamicImage], 0, 0);
+    super(getTempImagePixelSource(colorType, 0)[symbols.dynamicImage], 0, 0);
     this.#channels = channels;
   }
 
