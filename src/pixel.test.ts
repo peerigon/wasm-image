@@ -24,30 +24,22 @@ describe("Pixel (image)", () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 0, y: 0 });
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([142, 152, 115])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([142, 152, 115]));
 
     pixel.channels = Uint8Array.from([0, 0]);
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([0, 0, 115])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([0, 0, 115]));
   });
 
   test("channels (16bit)", async () => {
     const image = await createInstance(images.paths.rgb16bitPng);
     const pixel = image.getPixel({ x: 0, y: 0 });
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([65535, 25702, 2])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([65535, 25702, 2]));
 
     pixel.channels = Uint16Array.from([0, 0]);
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([0, 0, 2])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([0, 0, 2]));
   });
 
   // TODO: Check pixel transformations in actual jpg
@@ -76,9 +68,8 @@ describe("Pixel (image)", () => {
       },
       alpha: () => {
         throw new Error("Should not be called");
-      }
-    }
-    );
+      },
+    });
 
     expect(channels).toMatchObject([0, 0, 0]);
     expect(pixel.channels).toMatchObject(Uint8Array.from([1, 1, 1]));
@@ -88,9 +79,9 @@ describe("Pixel (image)", () => {
     pixel.apply({
       color: (channel) => {
         channels.push(channel);
-  
+
         return 2;
-      }
+      },
     });
 
     expect(channels).toMatchObject([1, 1, 1]);
@@ -123,9 +114,8 @@ describe("Pixel (image)", () => {
         channels.push(channel);
 
         return 1;
-      }
-    }
-    );
+      },
+    });
 
     expect(channels).toMatchObject([0, 0, 0, 0]);
     expect(pixel.channels).toMatchObject(Uint8Array.from([1, 1, 1, 1]));
@@ -135,13 +125,35 @@ describe("Pixel (image)", () => {
     pixel.apply({
       color: (channel) => {
         channels.push(channel);
-  
+
         return 2;
-      }
+      },
     });
 
     expect(channels).toMatchObject([1, 1, 1]);
     expect(pixel.channels).toMatchObject(Uint8Array.from([2, 2, 2, 1]));
+  });
+
+  test("map2()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
+    const otherPixel = image.getPixel({ x: 100, y: 0 });
+    const channelTuples: Array<Array<number>> = [];
+
+    const result = pixel.map2(otherPixel, (selfChannel, otherChannel) => {
+      channelTuples.push([selfChannel, otherChannel]);
+
+      return 0;
+    });
+
+    expect(channelTuples).toMatchObject([
+      [142, 165],
+      [152, 170],
+      [115, 148],
+    ]);
+    expect(pixel.channels).toMatchObject(Uint8Array.from([142, 152, 115]));
+    expect(otherPixel.channels).toMatchObject(Uint8Array.from([165, 170, 148]));
+    expect(result).toMatchObject(Uint8Array.from([0, 0, 0]));
   });
 
   test("apply2()", async () => {
@@ -162,23 +174,17 @@ describe("Pixel (image)", () => {
       [115, 148],
     ]);
     expect(pixel.channels).toMatchObject(Uint8Array.from([0, 0, 0]));
-
-    
   });
 
   test("invert()", async () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 0, y: 0 });
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([142, 152, 115])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([142, 152, 115]));
 
     pixel.invert();
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([113, 103, 140])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([113, 103, 140]));
   });
 
   test("blend()", async () => {
@@ -186,24 +192,18 @@ describe("Pixel (image)", () => {
     const pixel = image.getPixel({ x: 0, y: 0 });
     const otherPixel = image.getPixel({ x: 100, y: 0 });
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([142, 152, 115])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([142, 152, 115]));
 
     pixel.blend(otherPixel);
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([165, 170, 148])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([165, 170, 148]));
 
     const otherImage = await createInstance(images.paths.catJpg);
     const pixelFromOtherImage = otherImage.getPixel({ x: 50, y: 0 });
 
     pixel.blend(pixelFromOtherImage);
 
-    expect(pixel.channels).toMatchObject(
-      Uint8Array.from([150, 163, 120])
-    );
+    expect(pixel.channels).toMatchObject(Uint8Array.from([150, 163, 120]));
   });
 });
 
@@ -220,9 +220,7 @@ describe("Pixel (independent)", () => {
     // the original array type (Uint16Array in this case) is preserved
     pixel.channels = Uint8Array.from([0, 0]);
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([0, 0, 115, 255])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([0, 0, 115, 255]));
   });
 
   test("apply() without alpha channel", () => {
@@ -248,9 +246,8 @@ describe("Pixel (independent)", () => {
       },
       alpha: () => {
         throw new Error("Should not be called");
-      }
-    }
-    );
+      },
+    });
 
     expect(channels).toMatchObject([0, 0, 0]);
     expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1]));
@@ -260,9 +257,9 @@ describe("Pixel (independent)", () => {
     pixel.apply({
       color: (channel) => {
         channels.push(channel);
-  
+
         return 2;
-      }
+      },
     });
 
     expect(channels).toMatchObject([1, 1, 1]);
@@ -294,9 +291,8 @@ describe("Pixel (independent)", () => {
         channels.push(alphaChannel);
 
         return 1;
-      }
-    }
-    );
+      },
+    });
 
     expect(channels).toMatchObject([0, 0, 0, 0]);
     expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1, 1]));
@@ -306,13 +302,35 @@ describe("Pixel (independent)", () => {
     pixel.apply({
       color: (channel) => {
         channels.push(channel);
-  
+
         return 2;
-      }
+      },
     });
 
     expect(channels).toMatchObject([1, 1, 1]);
     expect(pixel.channels).toMatchObject(Uint16Array.from([2, 2, 2, 1]));
+  });
+
+  test("map2()", () => {
+    const pixel = Pixel.fromChannels(ColorType.Rgba8, [1, 1, 1, 1]);
+    const otherPixel = Pixel.fromChannels(ColorType.Rgba8, [2, 2, 2, 2]);
+    const channelTuples: Array<Array<number>> = [];
+
+    const result = pixel.map2(otherPixel, (selfChannel, otherChannel) => {
+      channelTuples.push([selfChannel, otherChannel]);
+
+      return 0;
+    });
+
+    expect(channelTuples).toMatchObject([
+      [1, 2],
+      [1, 2],
+      [1, 2],
+      [1, 2],
+    ]);
+    expect(result).toMatchObject(Uint16Array.from([0, 0, 0, 0]));
+    expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1, 1]));
+    expect(otherPixel.channels).toMatchObject(Uint16Array.from([2, 2, 2, 2]));
   });
 
   test("apply2()", () => {
@@ -335,38 +353,27 @@ describe("Pixel (independent)", () => {
     expect(pixel.channels).toMatchObject(Uint16Array.from([0, 0, 0, 0]));
   });
 
-  
-
   test("invert()", () => {
     const pixel = Pixel.fromChannels(ColorType.Rgba8, [1, 1, 1, 1]);
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([1, 1, 1, 1])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1, 1]));
 
     pixel.invert();
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([254, 254, 254, 1])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([254, 254, 254, 1]));
   });
 
   test("blend()", () => {
     const pixel = Pixel.fromChannels(ColorType.Rgba8, [1, 1, 1, 1]);
     const otherPixel = Pixel.fromChannels(ColorType.Rgba8, [3, 3, 3, 3]);
 
-    expect(pixel.channels).toMatchObject(
-      Uint16Array.from([1, 1, 1, 1])
-    );
+    expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1, 1]));
 
     pixel.blend(otherPixel);
 
     expect(pixel.channels).toMatchObject(
       Uint16Array.from([2, 2, 2, 3]) // Alpha channels are not blended. blend() just picks the highest alpha channel value
     );
-    expect(otherPixel.channels).toMatchObject(
-      Uint16Array.from([3, 3, 3, 3])
-    );
+    expect(otherPixel.channels).toMatchObject(Uint16Array.from([3, 3, 3, 3]));
   });
 });
-

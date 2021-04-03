@@ -42,6 +42,13 @@ const getTempPixelSource = (
   return tempPixelSources.get(colorType)![index];
 };
 
+type MapOptions =  ChannelFn
+| {
+    color: ChannelFn;
+    alpha?: ChannelFn;
+  };
+
+
 export class Pixel {
   // TODO: Add constants
 
@@ -59,9 +66,9 @@ export class Pixel {
     this.#source = source;
   }
 
-  static fromChannels = (color: ColorType, channels: ChannelsInput) => {
+  static fromChannels = (colorType: ColorType, channels: ChannelsInput) => {
     return new Pixel(
-      new IndependentPixelSource(color, normalizeChannels(channels))
+      new IndependentPixelSource(colorType, normalizeChannels(channels))
     );
   };
 
@@ -79,55 +86,55 @@ export class Pixel {
     return this.#source.read();
   }
 
-  // map = (channelFn: ChannelFn) => {
-  //   const newChannels = this.channels.map((channel: Channel) =>
-  //     channelFn(channel)
-  //   );
-
-  //   return new Pixel(new IndependentPixelSource(newChannels));
-  // };
-
-  apply = (
-    apply:
-      | ChannelFn
-      | {
-          color: ChannelFn;
-          alpha?: ChannelFn;
-        }
+  map = (
+    mapOptions: MapOptions
   ) => {
     const image = this.#source[symbols.dynamicImage];
     const channels = this.channels;
     const hasAlpha = image.color.hasAlpha;
-    let applyColor: ChannelFn;
-    let applyAlpha: ChannelFn | undefined;
+    let mapColor: ChannelFn;
+    let mapAlpha: ChannelFn | undefined;
 
-    if (typeof apply === "function") {
-      applyColor = apply;
-      applyAlpha = apply;
+    if (typeof mapOptions === "function") {
+      mapColor = mapOptions;
+      mapAlpha = mapOptions;
     } else {
-      applyColor = apply.color;
-      applyAlpha = apply.alpha;
+      mapColor = mapOptions.color;
+      mapAlpha = mapOptions.alpha;
     }
 
-    this.channels = channels.map((channel: Channel, index: number) => {
-      return hasAlpha && index === channels.length - 1
-        ? applyAlpha
-          ? applyAlpha(channel)
+    return channels.map((channel: Channel, index: number) =>
+      hasAlpha && index === channels.length - 1
+        ? mapAlpha
+          ? mapAlpha(channel)
           : channel
-        : applyColor(channel);
-    });
+        : mapColor(channel)
+    );
   };
 
-  apply2 = (
+  apply = (
+    mapOptions: MapOptions
+  ) => {
+    this.channels = this.map(mapOptions);
+  };
+
+  map2 = (
     other: Pixel,
     channelFn: (selfChannel: number, otherChannel: number) => number
   ) => {
     const selfChannels = this.channels;
     const otherChannels = other.channels;
 
-    this.channels = selfChannels.map((channel: Channel, index: number) =>
+    return selfChannels.map((channel: Channel, index: number) =>
       channelFn(channel, otherChannels[index])
     );
+  };
+
+  apply2 = (
+    other: Pixel,
+    channelFn: (selfChannel: number, otherChannel: number) => number
+  ) => {
+    this.channels = this.map2(other, channelFn);
   };
 
   invert = () => {
