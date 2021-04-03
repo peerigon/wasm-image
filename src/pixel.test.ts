@@ -134,28 +134,6 @@ describe("Pixel (image)", () => {
     expect(pixel.channels).toMatchObject(Uint8Array.from([2, 2, 2, 1]));
   });
 
-  test("map2()", async () => {
-    const image = await createInstance(images.paths.catJpg);
-    const pixel = image.getPixel({ x: 0, y: 0 });
-    const otherPixel = image.getPixel({ x: 100, y: 0 });
-    const channelTuples: Array<Array<number>> = [];
-
-    const result = pixel.map2(otherPixel, (selfChannel, otherChannel) => {
-      channelTuples.push([selfChannel, otherChannel]);
-
-      return 0;
-    });
-
-    expect(channelTuples).toMatchObject([
-      [142, 165],
-      [152, 170],
-      [115, 148],
-    ]);
-    expect(pixel.channels).toMatchObject(Uint8Array.from([142, 152, 115]));
-    expect(otherPixel.channels).toMatchObject(Uint8Array.from([165, 170, 148]));
-    expect(result).toMatchObject(Uint8Array.from([0, 0, 0]));
-  });
-
   test("apply2()", async () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 0, y: 0 });
@@ -309,28 +287,6 @@ describe("Pixel (independent)", () => {
 
     expect(channels).toMatchObject([1, 1, 1]);
     expect(pixel.channels).toMatchObject(Uint16Array.from([2, 2, 2, 1]));
-  });
-
-  test("map2()", () => {
-    const pixel = Pixel.fromChannels(ColorType.Rgba8, [1, 1, 1, 1]);
-    const otherPixel = Pixel.fromChannels(ColorType.Rgba8, [2, 2, 2, 2]);
-    const channelTuples: Array<Array<number>> = [];
-
-    const result = pixel.map2(otherPixel, (selfChannel, otherChannel) => {
-      channelTuples.push([selfChannel, otherChannel]);
-
-      return 0;
-    });
-
-    expect(channelTuples).toMatchObject([
-      [1, 2],
-      [1, 2],
-      [1, 2],
-      [1, 2],
-    ]);
-    expect(result).toMatchObject(Uint16Array.from([0, 0, 0, 0]));
-    expect(pixel.channels).toMatchObject(Uint16Array.from([1, 1, 1, 1]));
-    expect(otherPixel.channels).toMatchObject(Uint16Array.from([2, 2, 2, 2]));
   });
 
   test("apply2()", () => {
