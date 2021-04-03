@@ -13,7 +13,7 @@ import { Bounds } from "./bounds";
 import { Position } from "./position";
 import { Pixel } from "./pixel";
 import { pixelConstructor, wasmDynamicImage } from "./symbols";
-import { Color } from "./color";
+import { Color, ColorType } from "./color";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -96,7 +96,11 @@ export class DynamicImage {
 
   #color: Color;
 
-  constructor(options: { bytes: Uint8Array; format?: ImageFormat } | Dimensions) {
+  constructor(
+    options:
+      | { bytes: Uint8Array; format?: ImageFormat }
+      | (Dimensions & { color?: ColorType })
+  ) {
     if ("bytes" in options) {
       const { bytes, format } = options;
 
@@ -105,16 +109,16 @@ export class DynamicImage {
           ? wasm.loadFromMemory(bytes)
           : wasm.loadFromMemoryWithFormat(bytes, format);
     } else {
-      const { width, height } = options;
+      const { width, height, color = ColorType.Rgba8 } = options;
 
-      this[wasmDynamicImage] = wasm.WasmDynamicImage.newRgba8(width, height);
+      this[wasmDynamicImage] = new wasm.WasmDynamicImage(color, width, height);
     }
     this.#color = new Color(this);
   }
 
   get color() {
     return this.#color;
-  };
+  }
 
   toBytes = (outputFormatOptions?: OutputFormatOptions) => {
     if (outputFormatOptions === undefined) {
@@ -163,7 +167,11 @@ export class DynamicImage {
     if (width !== undefined && height !== undefined) {
       this[wasmDynamicImage].resizeExact(width, height, filter);
     } else {
-      this[wasmDynamicImage].resize(width ?? U32_MAX, height ?? U32_MAX, filter);
+      this[wasmDynamicImage].resize(
+        width ?? U32_MAX,
+        height ?? U32_MAX,
+        filter
+      );
     }
   };
 
@@ -223,21 +231,21 @@ export class DynamicImage {
     const [width, height] = this[wasmDynamicImage].dimensions();
 
     return { width, height };
-  };
+  }
 
   get width() {
     return this[wasmDynamicImage].width();
-  };
+  }
 
   get height() {
     return this[wasmDynamicImage].height();
-  };
+  }
 
   get bounds(): Bounds {
     const [x, y, width, height] = this[wasmDynamicImage].bounds();
 
     return { x, y, width, height };
-  };
+  }
 
   inBounds = ({ x, y }: Position) => {
     return this[wasmDynamicImage].inBounds(x, y);

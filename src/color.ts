@@ -3,6 +3,7 @@ import { wasmDynamicImage } from "./symbols";
 import * as wasm from "./wasm";
 
 export const ColorType = wasm.WasmColorType;
+// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type ColorType = wasm.WasmColorType;
 
 export class Color {

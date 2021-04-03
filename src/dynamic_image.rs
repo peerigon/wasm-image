@@ -1,3 +1,4 @@
+use crate::color::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
 use crate::image_output_format::WasmImageOutputFormat;
@@ -15,16 +16,29 @@ pub struct WasmDynamicImage {
 
 // Cannot be part of impl WasmDynamicImage because we don't
 // want to expose it to JS land.
-pub fn new(instance: DynamicImage) -> WasmDynamicImage {
+pub(crate) fn new(instance: DynamicImage) -> WasmDynamicImage {
     WasmDynamicImage { instance }
 }
 
 #[wasm_bindgen]
 impl WasmDynamicImage {
-    #[wasm_bindgen(js_name = "newRgba8")]
-    pub fn new_rgba8(width: u32, height: u32) -> WasmDynamicImage {
+    #[wasm_bindgen(constructor)]
+    pub fn new(color: WasmColorType, width: u32, height: u32) -> WasmDynamicImage {
+        let instance = match color {
+            WasmColorType::L8 => DynamicImage::new_luma8(width, height),
+            WasmColorType::La8 => DynamicImage::new_luma_a8(width, height),
+            WasmColorType::Rgb8 => DynamicImage::new_rgb8(width, height),
+            WasmColorType::Rgba8 => DynamicImage::new_rgba8(width, height),
+            WasmColorType::L16 => DynamicImage::new_luma16(width, height),
+            WasmColorType::La16 => DynamicImage::new_luma_a16(width, height),
+            WasmColorType::Rgb16 => DynamicImage::new_rgb16(width, height),
+            WasmColorType::Rgba16 => DynamicImage::new_rgba16(width, height),
+            WasmColorType::Bgr8 => DynamicImage::new_bgr8(width, height),
+            WasmColorType::Bgra8 => DynamicImage::new_bgra8(width, height),
+        };
+
         WasmDynamicImage {
-            instance: DynamicImage::new_rgba8(width, height),
+            instance,
         }
     }
 
