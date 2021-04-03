@@ -51,8 +51,23 @@ describe("Pixel (image)", () => {
     expect(color.channelCount).toBe(3);
   });
 
-  // TODO: Check pixel transformations in actual jpg
+  test("toLuma()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [255, 0, 255, 100]);
+    const lumaPixel8 = pixel8.toLuma();
 
+    expect(lumaPixel8.channels).toMatchObject(Uint8Array.from([72]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgba16, [30000, 0, 30000, 100]);
+    const lumaPixel16 = pixel16.toLuma();
+
+    expect(lumaPixel16.channels).toMatchObject(Uint16Array.from([8544]));
+  });
+
+  test("map()", async () => {
+    // map() is called during apply() that's why we don't have an extra test for map()
+  });
+
+  // TODO: Check pixel transformations in actual jpg
   test("apply() without alpha channel", async () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 0, y: 0 });
@@ -141,6 +156,10 @@ describe("Pixel (image)", () => {
 
     expect(channels).toMatchObject([1, 1, 1]);
     expect(pixel.channels).toMatchObject(Uint8Array.from([2, 2, 2, 1]));
+  });
+
+  test("map2()", () => {
+    // map2() is called during apply2() that's why we don't have an extra test for map2()
   });
 
   test("apply2()", async () => {

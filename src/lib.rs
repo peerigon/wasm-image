@@ -10,6 +10,7 @@ use dynamic_image::WasmDynamicImage;
 mod image_format;
 use image_format::WasmImageFormat;
 mod image_output_format;
+#[macro_use]
 mod macros;
 mod pixel;
 

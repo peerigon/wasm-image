@@ -42,12 +42,12 @@ const getTempImagePixelSource = (
   return tempPixelSources.get(colorType)![index];
 };
 
-type MapOptions =  ChannelFn
-| {
-    color: ChannelFn;
-    alpha?: ChannelFn;
-  };
-
+type MapOptions =
+  | ChannelFn
+  | {
+      color: ChannelFn;
+      alpha?: ChannelFn;
+    };
 
 export class Pixel {
   // TODO: Add constants
@@ -90,9 +90,18 @@ export class Pixel {
     return this.#source[symbols.dynamicImage].color;
   }
 
-  map = (
-    mapOptions: MapOptions
-  ) => {
+  toLuma = () => {
+    const [image] = this.#borrowWasmDynamicImage(0);
+
+    return switchByBit(this.color.type, {
+      bit8: () =>
+        Pixel.fromChannels(ColorType.L8, image.toLuma8(this.x, this.y)),
+      bit16: () =>
+        Pixel.fromChannels(ColorType.L16, image.toLuma16(this.x, this.y)),
+    });
+  };
+
+  map = (mapOptions: MapOptions) => {
     const image = this.#source[symbols.dynamicImage];
     const channels = this.channels;
     const hasAlpha = image.color.hasAlpha;
@@ -116,9 +125,7 @@ export class Pixel {
     );
   };
 
-  apply = (
-    mapOptions: MapOptions
-  ) => {
+  apply = (mapOptions: MapOptions) => {
     this.channels = this.map(mapOptions);
   };
 
@@ -236,43 +243,31 @@ class ImagePixelSource extends CommonPixelSource {
   readonly type = PixelSourceType.Image;
 
   read: CommonPixelSource["read"] = () => {
-    switch (this[symbols.wasmDynamicImage].colorType()) {
-      case wasm.WasmColorType.L16:
-      case wasm.WasmColorType.La16:
-      case wasm.WasmColorType.Rgb16:
-      case wasm.WasmColorType.Rgba16: {
-        return this[symbols.wasmDynamicImage].pixelGetChannels16(
-          this.x,
-          this.y
-        );
-      }
-      default: {
-        return this[symbols.wasmDynamicImage].pixelGetChannels8(this.x, this.y);
-      }
-    }
+    return switchByBit(this[symbols.wasmDynamicImage].colorType(), {
+      bit8: () =>
+        this[symbols.wasmDynamicImage].pixelGetChannels8(this.x, this.y),
+      bit16: () =>
+        this[symbols.wasmDynamicImage].pixelGetChannels16(this.x, this.y),
+    });
   };
 
   write: CommonPixelSource["write"] = (channels) => {
-    switch (this[symbols.wasmDynamicImage].colorType()) {
-      case wasm.WasmColorType.L16:
-      case wasm.WasmColorType.La16:
-      case wasm.WasmColorType.Rgb16:
-      case wasm.WasmColorType.Rgba16: {
-        this[symbols.wasmDynamicImage].pixelSetChannels16(
-          this.x,
-          this.y,
-          channelsToU16Array(channels)
-        );
-        break;
-      }
-      default: {
+    switchByBit(this[symbols.wasmDynamicImage].colorType(), {
+      bit8: () => {
         this[symbols.wasmDynamicImage].pixelSetChannels8(
           this.x,
           this.y,
           channelsToU8Array(channels)
         );
-      }
-    }
+      },
+      bit16: () => {
+        this[symbols.wasmDynamicImage].pixelSetChannels16(
+          this.x,
+          this.y,
+          channelsToU16Array(channels)
+        );
+      },
+    });
   };
 }
 
@@ -294,3 +289,20 @@ class IndependentPixelSource extends CommonPixelSource {
     this.#channels.set(channels.slice(0, length));
   };
 }
+
+const switchByBit = <ResultBit8, ResultBit16>(
+  colorType: ColorType,
+  { bit8, bit16 }: { bit8: () => ResultBit8; bit16: () => ResultBit16 }
+): ResultBit8 | ResultBit16 => {
+  switch (colorType) {
+    case wasm.WasmColorType.L16:
+    case wasm.WasmColorType.La16:
+    case wasm.WasmColorType.Rgb16:
+    case wasm.WasmColorType.Rgba16: {
+      return bit16();
+    }
+    default: {
+      return bit8();
+    }
+  }
+};

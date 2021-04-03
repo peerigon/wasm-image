@@ -10,45 +10,23 @@ use wasm_bindgen::prelude::*;
 impl WasmDynamicImage {
     #[wasm_bindgen(js_name = "pixelGetChannels8")]
     pub fn pixel_get_channels_8(&self, x: u32, y: u32) -> Uint8Array {
-        match &self.instance {
-            DynamicImage::ImageLuma8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageLumaA8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageRgb8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageRgba8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageBgr8(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageBgra8(image) => image.get_pixel(x, y).channels().into(),
-            _ => {
-                panic!("Please use pixelGetChannels16");
-            }
-        }
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).channels().into()
+        })
     }
 
     #[wasm_bindgen(js_name = "pixelGetChannels16")]
     pub fn pixel_get_channels_16(&self, x: u32, y: u32) -> Uint16Array {
-        match &self.instance {
-            DynamicImage::ImageLuma16(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageLumaA16(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageRgb16(image) => image.get_pixel(x, y).channels().into(),
-            DynamicImage::ImageRgba16(image) => image.get_pixel(x, y).channels().into(),
-            _ => {
-                panic!("Please use pixelGetChannels8");
-            }
-        }
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).channels().into()
+        })
     }
 
     #[wasm_bindgen(js_name = "pixelSetChannels8")]
     pub fn pixel_set_channels_8(&mut self, x: u32, y: u32, new_channels: &[u8]) {
-        let current_channels = match &mut self.instance {
-            DynamicImage::ImageLuma8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageLumaA8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageRgb8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageRgba8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageBgr8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageBgra8(image) => image.get_pixel_mut(x, y).channels_mut(),
-            _ => {
-                panic!("Please use pixelSetChannels16");
-            }
-        };
+        let current_channels = dynamic_map_8!(self.instance, ref mut image -> {
+            image.get_pixel_mut(x, y).channels_mut()
+        });
         let length = cmp::min(current_channels.len(), new_channels.len());
         for i in 0..length {
             current_channels[i] = new_channels[i];
@@ -57,19 +35,97 @@ impl WasmDynamicImage {
 
     #[wasm_bindgen(js_name = "pixelSetChannels16")]
     pub fn pixel_set_channels_16(&mut self, x: u32, y: u32, new_channels: &[u16]) {
-        let current_channels = match &mut self.instance {
-            DynamicImage::ImageLuma16(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageLumaA16(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageRgb16(image) => image.get_pixel_mut(x, y).channels_mut(),
-            DynamicImage::ImageRgba16(image) => image.get_pixel_mut(x, y).channels_mut(),
-            _ => {
-                panic!("Please use pixelSetChannels8");
-            }
-        };
+        let current_channels = dynamic_map_16!(self.instance, ref mut image -> {
+            image.get_pixel_mut(x, y).channels_mut()
+        });
         let length = cmp::min(current_channels.len(), new_channels.len());
         for i in 0..length {
             current_channels[i] = new_channels[i];
         }
+    }
+
+    #[wasm_bindgen(js_name = "toRgb8")]
+    pub fn to_rgb_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_rgb().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toRgb16")]
+    pub fn to_rgb_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_rgb().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toRgba8")]
+    pub fn to_rgba_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_rgba().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toRgba16")]
+    pub fn to_rgba_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_rgba().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toLuma8")]
+    pub fn to_luma_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_luma().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toLuma16")]
+    pub fn to_luma_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_luma().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toLumaAlpha8")]
+    pub fn to_luma_alpha_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_luma_alpha().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toLumaAlpha16")]
+    pub fn to_luma_alpha_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_luma_alpha().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toBgr8")]
+    pub fn to_bgr_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_bgr().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toBgr16")]
+    pub fn to_bgr_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_bgr().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toBgra8")]
+    pub fn to_bgra_8(&self, x: u32, y: u32) -> Uint8Array {
+        dynamic_map_8!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_bgra().channels().into()
+        })
+    }
+
+    #[wasm_bindgen(js_name = "toBgra16")]
+    pub fn to_bgra_16(&self, x: u32, y: u32) -> Uint16Array {
+        dynamic_map_16!(self.instance, ref image -> {
+            image.get_pixel(x, y).to_bgra().channels().into()
+        })
     }
     
     #[wasm_bindgen(js_name = "pixelInvert")]
