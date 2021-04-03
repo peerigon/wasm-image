@@ -13,6 +13,7 @@ export type Channel = Channels[number];
 
 export type ChannelsInput = Channels | Uint8ClampedArray | Array<number>;
 
+// TODO: Initialize channels with default values if the array is too short
 export const normalizeChannels = (channels: ChannelsInput) =>
   channels instanceof Uint8Array
     ? channels

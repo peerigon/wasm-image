@@ -47,6 +47,14 @@ export class Pixel {
 
   #source: PixelSource;
 
+  get x() {
+    return this.#source.x;
+  }
+
+  get y() {
+    return this.#source.y;
+  }
+
   private constructor(source: PixelSource) {
     this.#source = source;
   }
