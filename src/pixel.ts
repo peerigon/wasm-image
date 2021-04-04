@@ -1,4 +1,3 @@
-import { WasmColorType } from "../pkg/wasm_image";
 import {
   Channel,
   Channels,
@@ -7,7 +6,7 @@ import {
   channelsToU8Array,
   normalizeChannels,
 } from "./channels";
-import { Color, ColorType } from "./color";
+import { ColorType } from "./color";
 import { DynamicImage } from "./dynamic-image";
 import * as symbols from "./symbols";
 import * as wasm from "./wasm";
