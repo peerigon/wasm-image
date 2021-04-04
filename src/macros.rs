@@ -15,7 +15,7 @@
 //                 panic!("Unknown DynamicImage instance");
 //             }
 //         }
-    );
+// );
 
     // ($dynamic_image: expr, ref mut $image: ident -> $action: expr) => (
     //     match $dynamic_image {

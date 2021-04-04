@@ -99,28 +99,28 @@ describe("Pixel (image)", () => {
     expect(rgbaPixel16.channels).toMatchObject(Uint16Array.from([30000, 0, 30000, 65535]));
   });
 
-  test.only("toBgr()", () => {
-    // const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [1, 2, 3, 4]);
-    // const bgrPixel8 = pixel8.toBgr();
+  test("toBgr()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [1, 2, 3, 4]);
+    const bgrPixel8 = pixel8.toBgr();
 
-    // expect(bgrPixel8.channels).toMatchObject(Uint8Array.from([3, 2, 1]));
+    expect(bgrPixel8.channels).toMatchObject(Uint8Array.from([3, 2, 1]));
     
     const pixel16 = Pixel.fromChannels(ColorType.Rgba16, [10000, 20000, 30000, 40000]);
     const bgrPixel16 = pixel16.toBgr();
 
-    expect(bgrPixel16.channels).toMatchObject(Uint8Array.from([3, 2, 1]));
+    expect(bgrPixel16.channels).toMatchObject(Uint16Array.from([30000, 20000, 10000]));
   });
 
   test("toBgra()", () => {
-    const pixel8 = Pixel.fromChannels(ColorType.Rgb8, [255, 0, 255]);
-    const lumaAlphaPixel8 = pixel8.toBgra();
+    const pixel8 = Pixel.fromChannels(ColorType.Rgb8, [1, 2, 3]);
+    const bgraPixel8 = pixel8.toBgra();
 
-    expect(lumaAlphaPixel8.channels).toMatchObject(Uint8Array.from([255, 0, 255, 255]));
+    expect(bgraPixel8.channels).toMatchObject(Uint8Array.from([3, 2, 1, 255]));
     
-    const pixel16 = Pixel.fromChannels(ColorType.Rgb16, [30000, 0, 30000]);
-    const lumaAlphaPixel16 = pixel16.toBgra();
+    const pixel16 = Pixel.fromChannels(ColorType.Rgb16, [10000, 20000, 30000]);
+    const bgraPixel16 = pixel16.toBgra();
 
-    expect(lumaAlphaPixel16.channels).toMatchObject(Uint16Array.from([30000, 0, 30000, 65535]));
+    expect(bgraPixel16.channels).toMatchObject(Uint16Array.from([30000, 20000, 10000, 65535]));
   });
 
   test("map()", async () => {

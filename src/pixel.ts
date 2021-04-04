@@ -99,22 +99,44 @@ export class Pixel {
 
   toRgba = () => this.#toColorType(ColorType.Rgba8, ColorType.Rgba16);
 
-  toBgr = () => this.#toColorType(ColorType.Bgr8);
+  /**
+   * Throws if the image is a 16-bit image
+   */
+  toBgr = () => {
+    return switchByBit(this.color.type, {
+      bit8: () => this.#toColorType(ColorType.Bgr8, ColorType.Bgr8),
+      bit16: () => {
+        throw new Error(`toBgr() not implemented for 16-bit images`);
+      },
+    });
+  };
 
-  toBgra = () => this.#toColorType(ColorType.Bgra8);
+  /**
+   * Throws if the image is a 16-bit image
+   */
+  toBgra = () => {
+    return switchByBit(this.color.type, {
+      bit8: () => this.#toColorType(ColorType.Bgra8, ColorType.Bgra8),
+      bit16: () => {
+        throw new Error(`toBgra() not implemented for 16-bit images`);
+      },
+    });
+  };
 
-  #toColorType = (colorType8: ColorType, colorType16?: ColorType) => {
+  #toColorType = (colorType8: ColorType, colorType16: ColorType) => {
     const [image] = this.#borrowWasmDynamicImage(0);
-
-    if (colorType16 === undefined) {
-        return Pixel.fromChannels(colorType8, image.toColorType8(this.x, this.y, colorType8));
-    }
 
     return switchByBit(this.color.type, {
       bit8: () =>
-        Pixel.fromChannels(colorType8, image.toColorType8(this.x, this.y, colorType8)),
+        Pixel.fromChannels(
+          colorType8,
+          image.toColorType8(this.x, this.y, colorType8)
+        ),
       bit16: () =>
-        Pixel.fromChannels(colorType16, image.toColorType16(this.x, this.y, colorType16)),
+        Pixel.fromChannels(
+          colorType16,
+          image.toColorType16(this.x, this.y, colorType16)
+        ),
     });
   };
 

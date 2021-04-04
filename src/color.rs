@@ -3,7 +3,6 @@ use image::ColorType;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-#[derive(Debug)]
 pub enum WasmColorType {
     L8,
     La8,
@@ -32,7 +31,6 @@ impl From<WasmColorType> for ColorType {
             WasmColorType::La16 => ColorType::La16,
             WasmColorType::Rgb16 => ColorType::Rgb16,
             WasmColorType::Rgba16 => ColorType::Rgba16,
-            _ => panic!("Color type {:?} not supported", wasm_color_type)
         }
     }
 }
