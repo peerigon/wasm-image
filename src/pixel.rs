@@ -1,3 +1,5 @@
+use image::Rgba;
+use image::Bgr;
 use crate::color::WasmColorType;
 use std::cmp;
 use js_sys::{Uint8Array, Uint16Array};
@@ -49,7 +51,7 @@ impl WasmDynamicImage {
     pub fn to_color_type_8(&self, x: u32, y: u32, color_type: WasmColorType) -> Uint8Array {
         map_dynamic_image_8!(self.instance, ref image -> {
             let pixel = image.get_pixel(x, y);
-
+            
             match color_type {
                 WasmColorType::L8 => pixel.to_luma().channels().into(),
                 WasmColorType::La8 => pixel.to_luma_alpha().channels().into(),
@@ -74,6 +76,8 @@ impl WasmDynamicImage {
                 WasmColorType::La16 => pixel.to_luma_alpha().channels().into(),
                 WasmColorType::Rgb16 => pixel.to_rgb().channels().into(),
                 WasmColorType::Rgba16 => pixel.to_rgba().channels().into(),
+                WasmColorType::Bgr8 => pixel.to_bgr().channels().into(),
+                WasmColorType::Bgra8 => pixel.to_bgra().channels().into(),
                 _ => {
                     panic!("Please use the 8bit version of this method");
                 }
