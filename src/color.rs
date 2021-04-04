@@ -8,14 +8,14 @@ pub enum WasmColorType {
     La8,
     Rgb8,
     Rgba8,
+    
+    Bgr8,
+    Bgra8,
 
     L16,
     La16,
     Rgb16,
     Rgba16,
-
-    Bgr8,
-    Bgra8,
 }
 
 impl From<WasmColorType> for ColorType {
@@ -25,12 +25,12 @@ impl From<WasmColorType> for ColorType {
             WasmColorType::La8 => ColorType::La8,
             WasmColorType::Rgb8 => ColorType::Rgb8,
             WasmColorType::Rgba8 => ColorType::Rgba8,
+            WasmColorType::Bgr8 => ColorType::Bgr8,
+            WasmColorType::Bgra8 => ColorType::Bgra8,
             WasmColorType::L16 => ColorType::L16,
             WasmColorType::La16 => ColorType::La16,
             WasmColorType::Rgb16 => ColorType::Rgb16,
             WasmColorType::Rgba16 => ColorType::Rgba16,
-            WasmColorType::Bgr8 => ColorType::Bgr8,
-            WasmColorType::Bgra8 => ColorType::Bgra8,
         }
     }
 }
@@ -42,12 +42,12 @@ impl From<ColorType> for WasmColorType {
             ColorType::La8 => WasmColorType::La8,
             ColorType::Rgb8 => WasmColorType::Rgb8,
             ColorType::Rgba8 => WasmColorType::Rgba8,
+            ColorType::Bgr8 => WasmColorType::Bgr8,
+            ColorType::Bgra8 => WasmColorType::Bgra8,
             ColorType::L16 => WasmColorType::L16,
             ColorType::La16 => WasmColorType::La16,
             ColorType::Rgb16 => WasmColorType::Rgb16,
             ColorType::Rgba16 => WasmColorType::Rgba16,
-            ColorType::Bgr8 => WasmColorType::Bgr8,
-            ColorType::Bgra8 => WasmColorType::Bgra8,
             _ => panic!("Color type {:?} not supported", color_type)
         }
     }

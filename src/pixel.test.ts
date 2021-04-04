@@ -63,6 +63,66 @@ describe("Pixel (image)", () => {
     expect(lumaPixel16.channels).toMatchObject(Uint16Array.from([8544]));
   });
 
+  test("toLumaAlpha()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [255, 0, 255, 100]);
+    const lumaAlphaPixel8 = pixel8.toLumaAlpha();
+
+    expect(lumaAlphaPixel8.channels).toMatchObject(Uint8Array.from([72, 100]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgba16, [30000, 0, 30000, 100]);
+    const lumaAlphaPixel16 = pixel16.toLumaAlpha();
+
+    expect(lumaAlphaPixel16.channels).toMatchObject(Uint16Array.from([8544, 100]));
+  });
+
+  test("toRgb()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [255, 0, 255, 100]);
+    const rgbPixel8 = pixel8.toRgb();
+
+    expect(rgbPixel8.channels).toMatchObject(Uint8Array.from([255, 0, 255]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgba16, [30000, 0, 30000, 100]);
+    const rgbPixel16 = pixel16.toRgb();
+
+    expect(rgbPixel16.channels).toMatchObject(Uint16Array.from([30000, 0, 30000]));
+  });
+
+  test("toRgba()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgb8, [255, 0, 255]);
+    const rgbaPixel8 = pixel8.toRgba();
+
+    expect(rgbaPixel8.channels).toMatchObject(Uint8Array.from([255, 0, 255, 255]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgb16, [30000, 0, 30000]);
+    const rgbaPixel16 = pixel16.toRgba();
+
+    expect(rgbaPixel16.channels).toMatchObject(Uint16Array.from([30000, 0, 30000, 65535]));
+  });
+
+  test("toBgr()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgba8, [1, 2, 3, 4]);
+    const bgrPixel8 = pixel8.toBgr();
+
+    expect(bgrPixel8.channels).toMatchObject(Uint8Array.from([3, 2, 1]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgba16, [10000, 20000, 30000, 40000]);
+    const bgrPixel16 = pixel16.toBgr();
+
+    expect(bgrPixel16.channels).toMatchObject(Uint8Array.from([3, 2, 1]));
+  });
+
+  test("toBgra()", () => {
+    const pixel8 = Pixel.fromChannels(ColorType.Rgb8, [255, 0, 255]);
+    const lumaAlphaPixel8 = pixel8.toBgra();
+
+    expect(lumaAlphaPixel8.channels).toMatchObject(Uint8Array.from([255, 0, 255, 255]));
+    
+    const pixel16 = Pixel.fromChannels(ColorType.Rgb16, [30000, 0, 30000]);
+    const lumaAlphaPixel16 = pixel16.toBgra();
+
+    expect(lumaAlphaPixel16.channels).toMatchObject(Uint16Array.from([30000, 0, 30000, 65535]));
+  });
+
   test("map()", async () => {
     // map() is called during apply() that's why we don't have an extra test for map()
   });

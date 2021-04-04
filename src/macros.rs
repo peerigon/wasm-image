@@ -1,7 +1,6 @@
-#[macro_export]
-macro_rules! dynamic_map_8(
-    ($dynimage: expr, ref $image: ident -> $action: expr) => (
-        match $dynimage {
+macro_rules! map_dynamic_image_8(
+    ($dynamic_image: expr, ref $image: ident -> $action: expr) => (
+        match $dynamic_image {
             DynamicImage::ImageLuma8(ref $image) => $action,
             DynamicImage::ImageLumaA8(ref $image) => $action,
             DynamicImage::ImageRgb8(ref $image) => $action,
@@ -14,8 +13,8 @@ macro_rules! dynamic_map_8(
         }
     );
 
-    ($dynimage: expr, ref mut $image: ident -> $action: expr) => (
-        match $dynimage {
+    ($dynamic_image: expr, ref mut $image: ident -> $action: expr) => (
+        match $dynamic_image {
             DynamicImage::ImageLuma8(ref mut $image) => $action,
             DynamicImage::ImageLumaA8(ref mut $image) => $action,
             DynamicImage::ImageRgb8(ref mut $image) => $action,
@@ -29,10 +28,9 @@ macro_rules! dynamic_map_8(
     );
 );
 
-#[macro_export]
-macro_rules! dynamic_map_16(
-    ($dynimage: expr, ref $image: ident -> $action: expr) => (
-        match $dynimage {
+macro_rules! map_dynamic_image_16(
+    ($dynamic_image: expr, ref $image: ident -> $action: expr) => (
+        match $dynamic_image {
             DynamicImage::ImageLuma16(ref $image) => $action,
             DynamicImage::ImageLumaA16(ref $image) => $action,
             DynamicImage::ImageRgb16(ref $image) => $action,
@@ -43,8 +41,8 @@ macro_rules! dynamic_map_16(
         }
     );
 
-    ($dynimage: expr, ref mut $image: ident -> $action: expr) => (
-        match $dynimage {
+    ($dynamic_image: expr, ref mut $image: ident -> $action: expr) => (
+        match $dynamic_image {
             DynamicImage::ImageLuma16(ref mut $image) => $action,
             DynamicImage::ImageLumaA16(ref mut $image) => $action,
             DynamicImage::ImageRgb16(ref mut $image) => $action,

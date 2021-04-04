@@ -1,3 +1,4 @@
+import { WasmColorType } from "../pkg/wasm_image";
 import {
   Channel,
   Channels,
@@ -6,7 +7,7 @@ import {
   channelsToU8Array,
   normalizeChannels,
 } from "./channels";
-import { ColorType } from "./color";
+import { Color, ColorType } from "./color";
 import { DynamicImage } from "./dynamic-image";
 import * as symbols from "./symbols";
 import * as wasm from "./wasm";
@@ -90,14 +91,30 @@ export class Pixel {
     return this.#source[symbols.dynamicImage].color;
   }
 
-  toLuma = () => {
+  toLuma = () => this.#toColorType(ColorType.L8, ColorType.L16);
+
+  toLumaAlpha = () => this.#toColorType(ColorType.La8, ColorType.La16);
+
+  toRgb = () => this.#toColorType(ColorType.Rgb8, ColorType.Rgb16);
+
+  toRgba = () => this.#toColorType(ColorType.Rgba8, ColorType.Rgba16);
+
+  toBgr = () => this.#toColorType(ColorType.Bgr8);
+
+  toBgra = () => this.#toColorType(ColorType.Bgra8);
+
+  #toColorType = (colorType8: ColorType, colorType16?: ColorType) => {
     const [image] = this.#borrowWasmDynamicImage(0);
+
+    if (colorType16 === undefined) {
+        return Pixel.fromChannels(colorType8, image.toColorType8(this.x, this.y, colorType8));
+    }
 
     return switchByBit(this.color.type, {
       bit8: () =>
-        Pixel.fromChannels(ColorType.L8, image.toLuma8(this.x, this.y)),
+        Pixel.fromChannels(colorType8, image.toColorType8(this.x, this.y, colorType8)),
       bit16: () =>
-        Pixel.fromChannels(ColorType.L16, image.toLuma16(this.x, this.y)),
+        Pixel.fromChannels(colorType16, image.toColorType16(this.x, this.y, colorType16)),
     });
   };
 

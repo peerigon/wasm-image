@@ -1,3 +1,4 @@
+use crate::color::WasmColorType;
 use std::cmp;
 use js_sys::{Uint8Array, Uint16Array};
 use crate::WasmDynamicImage;
@@ -10,21 +11,21 @@ use wasm_bindgen::prelude::*;
 impl WasmDynamicImage {
     #[wasm_bindgen(js_name = "pixelGetChannels8")]
     pub fn pixel_get_channels_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
+        map_dynamic_image_8!(self.instance, ref image -> {
             image.get_pixel(x, y).channels().into()
         })
     }
 
     #[wasm_bindgen(js_name = "pixelGetChannels16")]
     pub fn pixel_get_channels_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
+        map_dynamic_image_16!(self.instance, ref image -> {
             image.get_pixel(x, y).channels().into()
         })
     }
 
     #[wasm_bindgen(js_name = "pixelSetChannels8")]
     pub fn pixel_set_channels_8(&mut self, x: u32, y: u32, new_channels: &[u8]) {
-        let current_channels = dynamic_map_8!(self.instance, ref mut image -> {
+        let current_channels = map_dynamic_image_8!(self.instance, ref mut image -> {
             image.get_pixel_mut(x, y).channels_mut()
         });
         let length = cmp::min(current_channels.len(), new_channels.len());
@@ -35,7 +36,7 @@ impl WasmDynamicImage {
 
     #[wasm_bindgen(js_name = "pixelSetChannels16")]
     pub fn pixel_set_channels_16(&mut self, x: u32, y: u32, new_channels: &[u16]) {
-        let current_channels = dynamic_map_16!(self.instance, ref mut image -> {
+        let current_channels = map_dynamic_image_16!(self.instance, ref mut image -> {
             image.get_pixel_mut(x, y).channels_mut()
         });
         let length = cmp::min(current_channels.len(), new_channels.len());
@@ -44,89 +45,125 @@ impl WasmDynamicImage {
         }
     }
 
-    #[wasm_bindgen(js_name = "toRgb8")]
-    pub fn to_rgb_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_rgb().channels().into()
+    #[wasm_bindgen(js_name = "toColorType8")]
+    pub fn to_color_type_8(&self, x: u32, y: u32, color_type: WasmColorType) -> Uint8Array {
+        map_dynamic_image_8!(self.instance, ref image -> {
+            let pixel = image.get_pixel(x, y);
+
+            match color_type {
+                WasmColorType::L8 => pixel.to_luma().channels().into(),
+                WasmColorType::La8 => pixel.to_luma_alpha().channels().into(),
+                WasmColorType::Rgb8 => pixel.to_rgb().channels().into(),
+                WasmColorType::Rgba8 => pixel.to_rgba().channels().into(),
+                WasmColorType::Bgr8 => pixel.to_bgr().channels().into(),
+                WasmColorType::Bgra8 => pixel.to_bgra().channels().into(),
+                _ => {
+                    panic!("Please use the 16bit version of this method");
+                }
+            }
         })
     }
 
-    #[wasm_bindgen(js_name = "toRgb16")]
-    pub fn to_rgb_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_rgb().channels().into()
+    #[wasm_bindgen(js_name = "toColorType16")]
+    pub fn to_color_type_16(&self, x: u32, y: u32, color_type: WasmColorType) -> Uint16Array {
+        map_dynamic_image_16!(self.instance, ref image -> {
+            let pixel = image.get_pixel(x, y);
+
+            match color_type {
+                WasmColorType::L16 => pixel.to_luma().channels().into(),
+                WasmColorType::La16 => pixel.to_luma_alpha().channels().into(),
+                WasmColorType::Rgb16 => pixel.to_rgb().channels().into(),
+                WasmColorType::Rgba16 => pixel.to_rgba().channels().into(),
+                _ => {
+                    panic!("Please use the 8bit version of this method");
+                }
+            }
         })
     }
 
-    #[wasm_bindgen(js_name = "toRgba8")]
-    pub fn to_rgba_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_rgba().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toRgb8")]
+    // pub fn to_rgb_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_rgb().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toRgba16")]
-    pub fn to_rgba_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_rgba().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toRgb16")]
+    // pub fn to_rgb_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_rgb().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toLuma8")]
-    pub fn to_luma_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_luma().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toRgba8")]
+    // pub fn to_rgba_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_rgba().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toLuma16")]
-    pub fn to_luma_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_luma().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toRgba16")]
+    // pub fn to_rgba_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_rgba().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toLumaAlpha8")]
-    pub fn to_luma_alpha_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_luma_alpha().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toLuma8")]
+    // pub fn to_luma_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_luma().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toLumaAlpha16")]
-    pub fn to_luma_alpha_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_luma_alpha().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toLuma16")]
+    // pub fn to_luma_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_luma().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toBgr8")]
-    pub fn to_bgr_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_bgr().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toLumaAlpha8")]
+    // pub fn to_luma_alpha_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_luma_alpha().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toBgr16")]
-    pub fn to_bgr_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_bgr().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toLumaAlpha16")]
+    // pub fn to_luma_alpha_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_luma_alpha().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toBgra8")]
-    pub fn to_bgra_8(&self, x: u32, y: u32) -> Uint8Array {
-        dynamic_map_8!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_bgra().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toBgr8")]
+    // pub fn to_bgr_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_bgr().channels().into()
+    //     })
+    // }
 
-    #[wasm_bindgen(js_name = "toBgra16")]
-    pub fn to_bgra_16(&self, x: u32, y: u32) -> Uint16Array {
-        dynamic_map_16!(self.instance, ref image -> {
-            image.get_pixel(x, y).to_bgra().channels().into()
-        })
-    }
+    // #[wasm_bindgen(js_name = "toBgr16")]
+    // pub fn to_bgr_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_bgr().channels().into()
+    //     })
+    // }
+
+    // #[wasm_bindgen(js_name = "toBgra8")]
+    // pub fn to_bgra_8(&self, x: u32, y: u32) -> Uint8Array {
+    //     map_dynamic_image_8!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_bgra().channels().into()
+    //     })
+    // }
+
+    // #[wasm_bindgen(js_name = "toBgra16")]
+    // pub fn to_bgra_16(&self, x: u32, y: u32) -> Uint16Array {
+    //     map_dynamic_image_16!(self.instance, ref image -> {
+    //         image.get_pixel(x, y).to_bgra().channels().into()
+    //     })
+    // }
     
     #[wasm_bindgen(js_name = "pixelInvert")]
     pub fn pixel_invert(&mut self, x: u32, y: u32) {
