@@ -428,26 +428,32 @@ describe("DynamicImage", () => {
   });
 
   test("pixels()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
     const totalPixelCount = 320 * 240;
     let i = 0;
     let pixel;
 
-    expect.assertions(totalPixelCount + 5);
+    expect.assertions(totalPixelCount + 9);
 
-    for (pixel of dynamicImage.pixels()) {
+    for (pixel of image.pixels()) {
       expect(pixel).toBeInstanceOf(Pixel);
       if (i === 0) {
-        expect(pixel).toMatchObject({ x: 0, y: 0 });
+        expect(pixel.x).toBe(0);
+        expect(pixel.y).toBe(0);
       } else if (i === 319) {
-        expect(pixel).toMatchObject({ x: 319, y: 0 });
+        expect(pixel.x).toBe(319);
+        expect(pixel.y).toBe(0);
       } else if (i === 320) {
-        expect(pixel).toMatchObject({ x: 0, y: 1 });
+        expect(pixel.x).toBe(0);
+        expect(pixel.y).toBe(1);
       }
       i++;
     }
 
     expect(i).toBe(totalPixelCount);
-    expect(pixel).toMatchObject({ x: 319, y: 239 });
+    if (pixel) {
+      expect(pixel.x).toBe(319);
+      expect(pixel.y).toBe(239);
+    }
   });
 });

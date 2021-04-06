@@ -89,13 +89,12 @@ export class GenericImage {
   };
 
   *pixels() {
-    const { [$viewBounds]: viewBounds } = this;
     const { width, height } = this.dimensions;
-    let x = viewBounds?.x ?? 0;
-    let y = viewBounds?.y ?? 0;
+    let x = 0;
+    let y = 0;
 
     while (x < width && y < height) {
-      yield Pixel[$pixelConstructor](this[$wasmDynamicImage], x, y);
+      yield this.getPixel({ x, y });
 
       x++;
 

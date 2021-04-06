@@ -1,6 +1,7 @@
 import { DynamicImage } from "./lib";
 import { SubImage } from "./generic-image";
 import * as images from "./tests/images";
+import { Pixel } from "./pixel";
 
 describe("SubImage", () => {
   const instances: Array<DynamicImage> = [];
@@ -60,9 +61,40 @@ describe("SubImage", () => {
     // Creating a SubImage from a SubImage should give us the expected pixel
     // x = 0px + 2 * 50px = 100px
     // y = 0px + 2 * 50px = 100px
-    const subImage = new SubImage(image, bounds).subImage(bounds);
+    const subImage = image.subImage(bounds).subImage(bounds);
     const subImagePixel = subImage.getPixel({ x: 0, y: 0 });
 
     expect(pixel.channels).toMatchObject(subImagePixel.channels);
+  });
+
+  test("pixels()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const subImage = image.subImage({ x: 100, y: 100, width: 100, height: 100 });
+    const totalPixelCount = 100 * 100;
+    let i = 0;
+    let pixel;
+
+    expect.assertions(totalPixelCount + 9);
+
+    for (pixel of subImage.pixels()) {
+      expect(pixel).toBeInstanceOf(Pixel);
+      if (i === 0) {
+        expect(pixel.x).toBe(100);
+        expect(pixel.y).toBe(100);
+      } else if (i === 99) {
+        expect(pixel.x).toBe(199);
+        expect(pixel.y).toBe(100);
+      } else if (i === 100) {
+        expect(pixel.x).toBe(100);
+        expect(pixel.y).toBe(101);
+      }
+      i++;
+    }
+
+    expect(i).toBe(totalPixelCount);
+    if (pixel) {
+      expect(pixel.x).toBe(199);
+      expect(pixel.y).toBe(199);
+    }
   });
 });
