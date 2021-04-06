@@ -2,7 +2,6 @@ import type { DynamicImage } from "./dynamic-image";
 
 export const $dynamicImage = Symbol("dynamicImage");
 export const $wasmDynamicImage = Symbol("wasmDynamicImage");
-export const $viewBounds = Symbol("viewBounds");
 export const $toGlobalPosition = Symbol("toGlobalPosition");
 export const $pixelConstructor = Symbol("pixelConstructor");
 
