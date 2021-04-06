@@ -405,7 +405,7 @@ describe("DynamicImage", () => {
     });
   });
 
-  test("dimensions(), width(), height(), bounds(), inBounds()", async () => {
+  test("dimensions, width, height, bounds, inBounds()", async () => {
     const dynamicImage = await createInstance(images.paths.catJpg);
     const { dimensions, width, height, bounds } = dynamicImage;
 

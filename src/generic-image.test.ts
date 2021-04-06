@@ -1,5 +1,5 @@
 import { DynamicImage } from "./lib";
-import { SubImage } from "./sub-image";
+import { SubImage } from "./generic-image";
 import * as images from "./tests/images";
 
 describe("SubImage", () => {
@@ -19,14 +19,6 @@ describe("SubImage", () => {
 
     return instance;
   };
-
-  test("constructor()", async () => {
-    const image = await createInstance(images.paths.catJpg);
-    const bounds = { x: 1, y: 2, width: 3, height: 4 };
-    const subImage = new SubImage(image, bounds);
-
-    expect(subImage).toMatchObject(bounds);
-  });
 
   test("getPixel()", async () => {
     const image = await createInstance(images.paths.catJpg);
@@ -65,6 +57,9 @@ describe("SubImage", () => {
     const image = await createInstance(images.paths.catJpg);
     const pixel = image.getPixel({ x: 100, y: 100 });
     const bounds = { x: 50, y: 50, width: 100, height: 100 };
+    // Creating a SubImage from a SubImage should give us the expected pixel
+    // x = 0px + 2 * 50px = 100px
+    // y = 0px + 2 * 50px = 100px
     const subImage = new SubImage(image, bounds).subImage(bounds);
     const subImagePixel = subImage.getPixel({ x: 0, y: 0 });
 

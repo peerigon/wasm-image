@@ -1,40 +1,39 @@
-import { DynamicImage } from "./dynamic-image";
-import { wasmDynamicImage } from "./symbols";
-import * as wasm from "./wasm";
+import { WasmColorType, WasmDynamicImage } from "../pkg/wasm_image";
+import { $wasmDynamicImage } from "./symbols";
 
-export const ColorType = wasm.WasmColorType;
+export const ColorType = WasmColorType;
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export type ColorType = wasm.WasmColorType;
+export type ColorType = WasmColorType;
 
 export class Color {
 
-    [wasmDynamicImage]: wasm.WasmDynamicImage;
+    [$wasmDynamicImage]: WasmDynamicImage;
 
-    constructor(dynamicImage: DynamicImage) {
-        this[wasmDynamicImage] = dynamicImage[wasmDynamicImage];
+    constructor(wasmDynamicImage: WasmDynamicImage) {
+        this[$wasmDynamicImage] = wasmDynamicImage;
     }
 
     get type(): ColorType {
-        return this[wasmDynamicImage].colorType();
+        return this[$wasmDynamicImage].colorType();
     };
 
     get bytesPerPixel() {
-        return this[wasmDynamicImage].colorBytesPerPixel();
+        return this[$wasmDynamicImage].colorBytesPerPixel();
     };
 
     get hasAlpha() {
-        return this[wasmDynamicImage].colorHasAlpha();
+        return this[$wasmDynamicImage].colorHasAlpha();
     };
 
     get hasColor() {
-        return this[wasmDynamicImage].colorHasColor();
+        return this[$wasmDynamicImage].colorHasColor();
     };
 
     get bitsPerPixel() {
-        return this[wasmDynamicImage].colorBitsPerPixel();
+        return this[$wasmDynamicImage].colorBitsPerPixel();
     };
 
     get channelCount() {
-        return this[wasmDynamicImage].colorChannelCount();
+        return this[$wasmDynamicImage].colorChannelCount();
     };
 }

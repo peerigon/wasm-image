@@ -6,10 +6,10 @@ import {
   channelsToU8Array,
   normalizeChannels,
 } from "./channels";
-import { ColorType } from "./color";
+import { Color, ColorType } from "./color";
 import { DynamicImage } from "./dynamic-image";
-import * as symbols from "./symbols";
-import * as wasm from "./wasm";
+import { $pixelConstructor, $wasmDynamicImage } from "./symbols";
+import { WasmColorType, WasmDynamicImage } from "./wasm";
 
 type ChannelFn = (channel: Channel) => Channel;
 type TempPixelSourceIndex = 0 | 1;
@@ -27,12 +27,12 @@ const getTempImagePixelSource = (
   if (tempPixelSources.has(colorType) === false) {
     tempPixelSources.set(colorType, [
       new ImagePixelSource(
-        new DynamicImage({ color: colorType, width: 1, height: 1 }),
+        new DynamicImage({ color: colorType, width: 1, height: 1 })[$wasmDynamicImage],
         0,
         0
       ),
       new ImagePixelSource(
-        new DynamicImage({ color: colorType, width: 1, height: 1 }),
+        new DynamicImage({ color: colorType, width: 1, height: 1 })[$wasmDynamicImage],
         0,
         0
       ),
@@ -54,8 +54,11 @@ export class Pixel {
 
   #source: PixelSource;
 
+  #color: Color;
+
   private constructor(source: PixelSource) {
     this.#source = source;
+    this.#color = new Color(source[$wasmDynamicImage]);
   }
 
   static fromChannels = (colorType: ColorType, channels: ChannelsInput) => {
@@ -64,11 +67,11 @@ export class Pixel {
     );
   };
 
-  static [symbols.pixelConstructor] = (
-    dynamicImage: DynamicImage,
+  static [$pixelConstructor] = (
+    wasmDynamicImage: WasmDynamicImage,
     x: number,
     y: number
-  ) => new Pixel(new ImagePixelSource(dynamicImage, x, y));
+  ) => new Pixel(new ImagePixelSource(wasmDynamicImage, x, y));
 
   get x() {
     return this.#source.x;
@@ -87,7 +90,7 @@ export class Pixel {
   }
 
   get color() {
-    return this.#source[symbols.dynamicImage].color;
+    return this.#color;
   }
 
   toLuma = () => this.#toColorType(ColorType.L8, ColorType.L16);
@@ -140,9 +143,8 @@ export class Pixel {
   };
 
   map = (mapOptions: MapOptions) => {
-    const image = this.#source[symbols.dynamicImage];
     const channels = this.channels;
-    const hasAlpha = image.color.hasAlpha;
+    const hasAlpha = this.color.hasAlpha;
     let mapColor: ChannelFn;
     let mapAlpha: ChannelFn | undefined;
 
@@ -197,10 +199,10 @@ export class Pixel {
     if (
       this.#source.type === PixelSourceType.Image &&
       other.#source.type === PixelSourceType.Image &&
-      this.#source[symbols.wasmDynamicImage] ===
-        other.#source[symbols.wasmDynamicImage]
+      this.#source[$wasmDynamicImage] ===
+        other.#source[$wasmDynamicImage]
     ) {
-      this.#source[symbols.wasmDynamicImage].pixelBlendSelf(
+      this.#source[$wasmDynamicImage].pixelBlendSelf(
         this.#source.x,
         this.#source.y,
         other.#source.x,
@@ -227,12 +229,12 @@ export class Pixel {
 
   #borrowWasmDynamicImage = (index: TempPixelSourceIndex) => {
     if (this.#source.type === PixelSourceType.Image) {
-      return [this.#source[symbols.wasmDynamicImage], doNothing] as const;
+      return [this.#source[$wasmDynamicImage], doNothing] as const;
     }
 
     const originalSource = this.#source;
     const tempSource = getTempImagePixelSource(
-      originalSource[symbols.dynamicImage].color.type,
+      this.color.type,
       index
     );
 
@@ -240,7 +242,7 @@ export class Pixel {
     this.#source = tempSource;
 
     return [
-      tempSource[symbols.wasmDynamicImage],
+      tempSource[$wasmDynamicImage],
       () => {
         originalSource.write(tempSource.read());
         this.#source = originalSource;
@@ -262,14 +264,10 @@ type PixelSource = ImagePixelSource | IndependentPixelSource;
 abstract class CommonPixelSource {
   abstract readonly type: PixelSourceType;
 
-  [symbols.dynamicImage]: DynamicImage;
+  readonly [$wasmDynamicImage]: WasmDynamicImage;
 
-  get [symbols.wasmDynamicImage]() {
-    return this[symbols.dynamicImage][symbols.wasmDynamicImage];
-  }
-
-  constructor(dynamicImage: DynamicImage, public x: number, public y: number) {
-    this[symbols.dynamicImage] = dynamicImage;
+  constructor(wasmDynamicImage: WasmDynamicImage, public x: number, public y: number) {
+    this[$wasmDynamicImage] = wasmDynamicImage;
   }
 
   abstract read: () => Channels;
@@ -281,25 +279,25 @@ class ImagePixelSource extends CommonPixelSource {
   readonly type = PixelSourceType.Image;
 
   read: CommonPixelSource["read"] = () => {
-    return switchByBit(this[symbols.wasmDynamicImage].colorType(), {
+    return switchByBit(this[$wasmDynamicImage].colorType(), {
       bit8: () =>
-        this[symbols.wasmDynamicImage].pixelGetChannels8(this.x, this.y),
+        this[$wasmDynamicImage].pixelGetChannels8(this.x, this.y),
       bit16: () =>
-        this[symbols.wasmDynamicImage].pixelGetChannels16(this.x, this.y),
+        this[$wasmDynamicImage].pixelGetChannels16(this.x, this.y),
     });
   };
 
   write: CommonPixelSource["write"] = (channels) => {
-    switchByBit(this[symbols.wasmDynamicImage].colorType(), {
+    switchByBit(this[$wasmDynamicImage].colorType(), {
       bit8: () => {
-        this[symbols.wasmDynamicImage].pixelSetChannels8(
+        this[$wasmDynamicImage].pixelSetChannels8(
           this.x,
           this.y,
           channelsToU8Array(channels)
         );
       },
       bit16: () => {
-        this[symbols.wasmDynamicImage].pixelSetChannels16(
+        this[$wasmDynamicImage].pixelSetChannels16(
           this.x,
           this.y,
           channelsToU16Array(channels)
@@ -315,7 +313,7 @@ class IndependentPixelSource extends CommonPixelSource {
   #channels: Channels;
 
   constructor(colorType: ColorType, channels: Channels) {
-    super(getTempImagePixelSource(colorType, 0)[symbols.dynamicImage], 0, 0);
+    super(getTempImagePixelSource(colorType, 0)[$wasmDynamicImage], 0, 0);
     this.#channels = channels;
   }
 
@@ -333,10 +331,10 @@ const switchByBit = <ResultBit8, ResultBit16>(
   { bit8, bit16 }: { bit8: () => ResultBit8; bit16: () => ResultBit16 }
 ): ResultBit8 | ResultBit16 => {
   switch (colorType) {
-    case wasm.WasmColorType.L16:
-    case wasm.WasmColorType.La16:
-    case wasm.WasmColorType.Rgb16:
-    case wasm.WasmColorType.Rgba16: {
+    case WasmColorType.L16:
+    case WasmColorType.La16:
+    case WasmColorType.Rgb16:
+    case WasmColorType.Rgba16: {
       return bit16();
     }
     default: {
