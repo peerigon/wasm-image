@@ -3,13 +3,16 @@ import { Dimensions } from "./dimensions";
 import { DynamicImage } from "./dynamic-image";
 import { Pixel } from "./pixel";
 import { Position } from "./position";
-import { $pixelConstructor, $toGlobalPosition, $wasmDynamicImage } from "./symbols";
+import {
+  $pixelConstructor,
+  $toGlobalPosition,
+  $wasmDynamicImage,
+} from "./symbols";
 import { WasmDynamicImage } from "./wasm";
 
 const $viewBounds = Symbol("viewBounds");
 
 export class GenericImage {
-
   [$wasmDynamicImage]: WasmDynamicImage;
 
   [$viewBounds]: Bounds | undefined;
@@ -30,7 +33,6 @@ export class GenericImage {
     } else {
       [width, height] = this[$wasmDynamicImage].dimensions();
     }
-
 
     return { width, height };
   }
@@ -60,9 +62,9 @@ export class GenericImage {
     if (viewBounds) {
       return { x: viewBounds.x + position.x, y: viewBounds.y + position.y };
     }
-    
+
     return position;
-  }
+  };
 
   getPixel = (position: Position) => {
     const { x, y } = this[$toGlobalPosition](position);
@@ -109,8 +111,18 @@ export class GenericImage {
     // TODO: Implement copyFrom
   };
 
-  copyWithin = () => {
-    // TODO: Implement copyWithin
+  copyWithin = (source: Bounds, target: Position) => {
+    const { x: sourceX, y: sourceY } = this[$toGlobalPosition](source);
+    const { x: targetX, y: targetY } = this[$toGlobalPosition](target);
+
+    return this[$wasmDynamicImage].genericImageCopyWithin(
+      sourceX,
+      sourceY,
+      source.width,
+      source.height,
+      targetX,
+      targetY
+    );
   };
 
   subImage = (bounds: Bounds) => {
@@ -133,7 +145,7 @@ class GenericSubImage extends GenericImage {
 
   toImage = () => {
     // TODO: Implement
-  }
+  };
 }
 
 export class SubImage extends GenericSubImage {

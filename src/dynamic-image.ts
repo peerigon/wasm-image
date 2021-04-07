@@ -1,10 +1,7 @@
-// TODO: Implement methods from GenericImage-Trait https://docs.rs/image/0.23.12/image/trait.GenericImage.html
-// TODO: Implement methods from GenericImageView-Trait https://docs.rs/image/0.23.12/image/trait.GenericImageView.html
-// TODO: Implement methods from SubImage-Trait https://docs.rs/image/0.23.12/image/struct.SubImage.html
 // TODO: Hint https://stackoverflow.com/questions/51544240/how-can-i-free-memory-allocated-by-rust-code-exposed-in-webassembly
-// TODO: Use getter and setters?
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
+// TODO: Throw on negative x, y
 
 import * as wasm from "./wasm";
 import { FilterType, ImageFormat } from "./lib";

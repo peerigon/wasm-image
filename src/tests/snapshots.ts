@@ -24,10 +24,30 @@ export const paths = {
     rotate90Jpg: resolve(pathToSnapshots, "rotate90.jpg"),
     rotate180Jpg: resolve(pathToSnapshots, "rotate180.jpg"),
     rotate270Jpg: resolve(pathToSnapshots, "rotate270.jpg"),
+    copyWithin: resolve(pathToSnapshots, "copyWithin.jpg"),
+    copyWithinSubImage: resolve(pathToSnapshots, "copyWithinSubImage.jpg"),
 };
 
-export const read = async (path: string) =>
+const read = async (path: string) =>
   fs.readFile(path);
 
-export const write = async (path: string, bytes: Uint8Array) =>
+const write = async (path: string, bytes: Uint8Array) =>
   fs.writeFile(path, bytes);
+
+export const compare = async ({
+  result,
+  snapshot,
+  updateSnapshot,
+}: {
+  result: Uint8Array;
+  snapshot: string;
+  updateSnapshot: boolean;
+}) => {
+  if (updateSnapshot) {
+    await write(snapshot, result);
+  } else {
+    const snapshotBuffer = await read(snapshot);
+
+    expect(snapshotBuffer.compare(result)).toBe(0);
+  }
+};

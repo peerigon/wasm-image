@@ -1,18 +1,20 @@
-use std::{convert::TryInto, io::Cursor};
-use image::{io::Reader, ImageFormat};
-use js_sys::{Uint32Array};
-use wasm_bindgen::prelude::*;
 mod color;
+mod dynamic_image;
 mod errors;
 mod filter_type;
-mod dynamic_image;
-use dynamic_image::WasmDynamicImage;
+mod generic_image;
 mod image_format;
-use image_format::WasmImageFormat;
 mod image_output_format;
 #[macro_use]
 mod macros;
 mod pixel;
+
+use std::{convert::TryInto, io::Cursor};
+use image::{io::Reader, ImageFormat};
+use js_sys::{Uint32Array};
+use wasm_bindgen::prelude::*;
+use image_format::WasmImageFormat;
+use dynamic_image::WasmDynamicImage;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.

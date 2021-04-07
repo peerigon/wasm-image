@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-
 import { Color } from "./color";
 import { DynamicImage, ImageFormat, OutputFormat } from "./lib";
 import { Pixel } from "./pixel";
 import * as images from "./tests/images";
 import * as snapshots from "./tests/snapshots";
 
-const updateSnapshots = false;
+const updateSnapshot = false;
 
 describe("DynamicImage", () => {
   const instances: Array<DynamicImage> = [];
@@ -24,22 +22,6 @@ describe("DynamicImage", () => {
     instances.push(instance);
 
     return instance;
-  };
-
-  const compare = async ({
-    result,
-    snapshot,
-  }: {
-    result: Uint8Array;
-    snapshot: string;
-  }) => {
-    if (updateSnapshots) {
-      await snapshots.write(snapshot, result);
-    } else {
-      const snapshotBuffer = await snapshots.read(snapshot);
-
-      expect(snapshotBuffer.compare(result)).toBe(0);
-    }
   };
 
   test("constructor() creates an instance", async () => {
@@ -85,344 +67,382 @@ describe("DynamicImage", () => {
   });
 
   test("crop()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.crop({ x: 100, y: 100, width: 100, height: 100 });
+    image.crop({ x: 100, y: 100, width: 100, height: 100 });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.croppedJpg,
+      updateSnapshot,
     });
   });
 
   test("color", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    expect(dynamicImage.color).toBeInstanceOf(Color);
+    expect(image.color).toBeInstanceOf(Color);
   });
 
   test("grayscale()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.grayscale();
+    image.grayscale();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.grayscaleJpg,
+      updateSnapshot,
     });
   });
 
   test("invert()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.invert();
+    image.invert();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.invertedJpg,
+      updateSnapshot,
     });
   });
 
   test("resize() by width", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.resize({
+    image.resize({
       width: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.resizedByWidthJpg,
+      updateSnapshot,
     });
   });
 
   test("resize() by height", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.resize({
+    image.resize({
       height: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.resizedByHeightJpg,
+      updateSnapshot,
     });
   });
 
   test("resize() by width and height", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.resize({
+    image.resize({
       width: 100,
       height: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.resizedByWidthHeightJpg,
+      updateSnapshot,
     });
   });
 
   test("thumbnail() by width", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.thumbnail({
+    image.thumbnail({
       width: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.thumbnailByWidthJpg,
+      updateSnapshot,
     });
   });
 
   test("thumbnail() by height", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.thumbnail({
+    image.thumbnail({
       height: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.thumbnailByHeightJpg,
+      updateSnapshot,
     });
   });
 
   test("thumbnail() by width and height", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.thumbnail({
+    image.thumbnail({
       width: 100,
       height: 100,
     });
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.thumbnailByWidthHeightJpg,
+      updateSnapshot,
     });
   });
 
   test("blur()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.blur(3);
+    image.blur(3);
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.blurJpg,
+      updateSnapshot,
     });
   });
 
   test("unsharpen()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.unsharpen(3, 20);
+    image.unsharpen(3, 20);
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.unsharpenJpg,
+      updateSnapshot,
     });
   });
 
   // TODO: Find out if this is working as intended
   test("filter3x3()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.filter3x3(Float32Array.from([0, 1, 0, 0, 1, 0, 0, 1, 0]));
+    image.filter3x3(Float32Array.from([0, 1, 0, 0, 1, 0, 0, 1, 0]));
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.filter3x3Jpg,
+      updateSnapshot,
     });
   });
 
   test("adjustContrast()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.adjustContrast(100);
+    image.adjustContrast(100);
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.adjustContrastJpg,
+      updateSnapshot,
     });
   });
 
   test("brighten()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.brighten(100);
+    image.brighten(100);
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.brightenJpg,
+      updateSnapshot,
     });
   });
 
   test("huerotate()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.huerotate(100);
+    image.huerotate(100);
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.huerotateJpg,
+      updateSnapshot,
     });
   });
 
   test("flipv()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.flipv();
+    image.flipv();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.flipvJpg,
+      updateSnapshot,
     });
   });
 
   test("fliph()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.fliph();
+    image.fliph();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.fliphJpg,
+      updateSnapshot,
     });
   });
 
   test("rotate90()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.rotate90();
+    image.rotate90();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.rotate90Jpg,
+      updateSnapshot,
     });
   });
 
   test("rotate180()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.rotate180();
+    image.rotate180();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.rotate180Jpg,
+      updateSnapshot,
     });
   });
 
   test("rotate270()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
+    const image = await createInstance(images.paths.catJpg);
 
-    dynamicImage.rotate270();
+    image.rotate270();
 
-    const result = dynamicImage.toBytes({
+    const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
 
-    await compare({
+    await snapshots.compare({
       result,
       snapshot: snapshots.paths.rotate270Jpg,
+      updateSnapshot,
+    });
+  });
+
+  test("copyWithin()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+
+    const returned = image.copyWithin({ x: 0, y: 0, width: 100, height: 100 }, { x: 100, y: 100 });
+
+    expect(returned).toBe(true);
+    
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.copyWithin,
+      updateSnapshot,
     });
   });
 
   test("dimensions, width, height, bounds, inBounds()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const { dimensions, width, height, bounds } = dynamicImage;
+    const image = await createInstance(images.paths.catJpg);
+    const { dimensions, width, height, bounds } = image;
 
     expect(dimensions).toMatchObject({ width: 320, height: 240 });
     expect(width).toBe(320);
     expect(height).toBe(240);
     expect(bounds).toMatchObject({ x: 0, y: 0, width: 320, height: 240 });
 
-    expect(dynamicImage.inBounds({ x: 0, y: -1 })).toBe(false);
-    expect(dynamicImage.inBounds({ x: 0, y: 0 })).toBe(true);
-    expect(dynamicImage.inBounds({ x: 319, y: 239 })).toBe(true);
-    expect(dynamicImage.inBounds({ x: 320, y: 239 })).toBe(false);
+    expect(image.inBounds({ x: 0, y: -1 })).toBe(false);
+    expect(image.inBounds({ x: 0, y: 0 })).toBe(true);
+    expect(image.inBounds({ x: 319, y: 239 })).toBe(true);
+    expect(image.inBounds({ x: 320, y: 239 })).toBe(false);
   });
 
   test("getPixel()", async () => {
-    const dynamicImage = await createInstance(images.paths.catJpg);
-    const pixel = dynamicImage.getPixel({ x: 0, y: 0 });
+    const image = await createInstance(images.paths.catJpg);
+    const pixel = image.getPixel({ x: 0, y: 0 });
 
     expect(pixel).toBeInstanceOf(Pixel);
   });

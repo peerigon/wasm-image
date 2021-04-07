@@ -1,7 +1,10 @@
-import { DynamicImage } from "./lib";
+import { DynamicImage, OutputFormat } from "./lib";
 import { SubImage } from "./generic-image";
-import * as images from "./tests/images";
 import { Pixel } from "./pixel";
+import * as images from "./tests/images";
+import * as snapshots from "./tests/snapshots";
+
+const updateSnapshot = false;
 
 describe("SubImage", () => {
   const instances: Array<DynamicImage> = [];
@@ -96,5 +99,24 @@ describe("SubImage", () => {
       expect(pixel.x).toBe(199);
       expect(pixel.y).toBe(199);
     }
+  });
+
+  test("copyWithin()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const subImage = image.subImage({ x: 50, y: 50, width: 100, height: 100 });
+
+    const returned = subImage.copyWithin({ x: 0, y: 0, width: 100, height: 100 }, { x: 50, y: 50 });
+
+    expect(returned).toBe(true);
+    
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.copyWithinSubImage,
+      updateSnapshot,
+    });
   });
 });
