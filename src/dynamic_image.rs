@@ -170,24 +170,20 @@ impl WasmDynamicImage {
         self.instance = self.instance.rotate270();
     }
 
-    /// The width and height of this image.
     pub fn dimensions(&self) -> Uint32Array {
         let dimensions = self.instance.dimensions();
 
         (&[dimensions.0, dimensions.1][..]).into()
     }
 
-    /// The width of this image.
     pub fn width(&self) -> u32 {
         self.instance.width()
     }
 
-    /// The height of this image.
     pub fn height(&self) -> u32 {
         self.instance.height()
     }
 
-    /// The bounding rectangle of this image.
     pub fn bounds(&self) -> Uint32Array {
         let bounds = self.instance.bounds();
 
@@ -195,175 +191,7 @@ impl WasmDynamicImage {
     }
 
     #[wasm_bindgen(js_name = "inBounds")]
-    /// Returns true if this x, y coordinate is contained inside the image.
     pub fn in_bounds(&self, x: u32, y: u32) -> bool {
         self.instance.in_bounds(x, y)
     }
-
-    // Implemented in JavaScript
-    // pub fn get_pixel(&self, x: u32, y: u32) -> Self::Pixel;
-
-    // Not implemented
-    // unsafe fn unsafe_get_pixel(&self, x: u32, y: u32) -> Self::Pixel
-
-    // Implemented in JavaScript
-    // pub fn pixels(&self) -> Pixels<Self>
-
-    // Returns an subimage that is an immutable view into this image.
-    // You can use [`GenericImage::sub_image`] if you need a mutable view instead.
-    // TODO: Implement
-    // pub fn view(&self, x: u32, y: u32, width: u32, height: u32) -> SubImage<&Self::InnerImageView> {
-    //     SubImage::new(self.inner(), x, y, width, height)
-    // }
-
-    // Not implemented
-    // pub fn get_pixel_mut(&mut self, x: u32, y: u32) -> &mut Self::Pixel;
-
-    // Implemented in JavaScript
-    // fn put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel);
-
-    // Not implemented
-    // unsafe fn unsafe_put_pixel(&mut self, x: u32, y: u32, pixel: Self::Pixel);
-
-    // TODO: Implement
-    // pub fn copy_from<O>(&mut self, other: &O, x: u32, y: u32) -> ImageResult<()>
-    // where
-    //     O: GenericImageView<Pixel = Self::Pixel>,
-    // {
-    //     // Do bounds checking here so we can use the non-bounds-checking
-    //     // functions to copy pixels.
-    //     if self.width() < other.width() + x || self.height() < other.height() + y {
-    //         return Err(ImageError::Parameter(ParameterError::from_kind(
-    //             ParameterErrorKind::DimensionMismatch,
-    //         )));
-    //     }
-
-    //     for i in 0..other.width() {
-    //         for k in 0..other.height() {
-    //             let p = other.get_pixel(i, k);
-    //             self.put_pixel(i + x, k + y, p);
-    //         }
-    //     }
-    //     Ok(())
-    // }
-
-    // Copies all of the pixels from one part of this image to another part of this image.
-    //
-    // The destination rectangle of the copy is specified with the top-left corner placed at (x, y).
-    //
-    // # Returns
-    // `true` if the copy was successful, `false` if the image could not
-    // be copied due to size constraints.
-    // TODO: Implement
-    // fn copy_within(&mut self, source: Rect, x: u32, y: u32) -> bool {
-    //     let Rect { x: sx, y: sy, width, height } = source;
-    //     let dx = x;
-    //     let dy = y;
-    //     assert!(sx < self.width() && dx < self.width());
-    //     assert!(sy < self.height() && dy < self.height());
-    //     if self.width() - dx.max(sx) < width || self.height() - dy.max(sy) < height {
-    //         return false;
-    //     }
-    //     // since `.rev()` creates a new dype we would either have to go with dynamic dispatch for the ranges
-    //     // or have quite a lot of code bloat. A macro gives us static dispatch with less visible bloat.
-    //     macro_rules! copy_within_impl_ {
-    //         ($xiter:expr, $yiter:expr) => {
-    //             for y in $yiter {
-    //                 let sy = sy + y;
-    //                 let dy = dy + y;
-    //                 for x in $xiter {
-    //                     let sx = sx + x;
-    //                     let dx = dx + x;
-    //                     let pixel = self.get_pixel(sx, sy);
-    //                     self.put_pixel(dx, dy, pixel);
-    //                 }
-    //             }
-    //         };
-    //     }
-    //     // check how target and source rectangles relate to each other so we dont overwrite data before we copied it.
-    //     match (sx < dx, sy < dy) {
-    //         (true, true) => copy_within_impl_!((0..width).rev(), (0..height).rev()),
-    //         (true, false) => copy_within_impl_!((0..width).rev(), 0..height),
-    //         (false, true) => copy_within_impl_!(0..width, (0..height).rev()),
-    //         (false, false) => copy_within_impl_!(0..width, 0..height),
-    //     }
-    //     true
-    // }
-
-    // Returns a mutable subimage that is a view into this image.
-    // If you want an immutable subimage instead, use [`GenericImageView::view`]
-    // TODO: Implement
-    // fn sub_image(
-    //     &mut self,
-    //     x: u32,
-    //     y: u32,
-    //     width: u32,
-    //     height: u32,
-    // ) -> SubImage<&mut Self::InnerImage> {
-    //     SubImage::new(self.inner_mut(), x, y, width, height)
-    // }
-
-    // Not implemented
-    // fn pixel_from_slice(slice: &[Self::Subpixel]) -> &Self;
-
-    // Not implemented
-    // fn pixel_from_slice_mut(slice: &mut [Self::Subpixel]) -> &mut Self;
-
-    // Not implemented
-    // fn pixel_to_rgb(&self) -> Rgb<Self::Subpixel>;
-
-    // Not implemented
-    // fn pixel_to_rgba(&self) -> Rgba<Self::Subpixel>;
-
-    // Not implemented
-    // fn pixel_to_luma(&self) -> Luma<Self::Subpixel>;
-
-    // Not implemented
-    // fn pixel_to_luma_alpha(&self) -> LumaA<Self::Subpixel>;
-
-    // Not implemented
-    // fn pixel_to_bgr(&self) -> Bgr<Self::Subpixel>;
-
-    // Not implemented
-    // fn pixel_to_bgra(&self) -> Bgra<Self::Subpixel>;
-
-    // Not implemented, use apply()
-    // fn pixel_map(&self, f: &js_sys::Function) -> Self;
-
-    // Implemented in JavaScript
-    // fn pixel_apply(&mut self, x: u32, y: u32, f: &js_sys::Function);
-
-    // Not implemented
-    // fn pixel_map_with_alpha<F, G>(&self, f: F, g: G) -> Self;
-
-    // Implemented in JavaScript
-    // fn pixel_apply_with_alpha<F, G>(&mut self, f: F, g: G);
-
-    // Not implemented
-    // fn pixel_map_without_alpha<F>(&self, f: F) -> Self
-    // where
-    //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
-    // {
-    //     let mut this = *self;
-    //     this.apply_with_alpha(f, |x| x);
-    //     this
-    // }
-
-    // Implemented in JavaScript
-    // fn pixel_apply_without_alpha<F>(&mut self, f: F)
-    // where
-    //     F: FnMut(Self::Subpixel) -> Self::Subpixel,
-    // {
-    //     self.apply_with_alpha(f, |x| x);
-    // }
-
-    // Not implemented
-    // fn pixel_map2<F>(&self, other: &Self, f: F) -> Self
-    // where
-    //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
-
-    // Implemented in JavaScript
-    // fn pixel_apply2<F>(&mut self, other: &Self, f: F)
-    // where
-    //     F: FnMut(Self::Subpixel, Self::Subpixel) -> Self::Subpixel;
 }

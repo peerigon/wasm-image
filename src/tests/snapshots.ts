@@ -24,6 +24,8 @@ export const paths = {
     rotate90Jpg: resolve(pathToSnapshots, "rotate90.jpg"),
     rotate180Jpg: resolve(pathToSnapshots, "rotate180.jpg"),
     rotate270Jpg: resolve(pathToSnapshots, "rotate270.jpg"),
+    copyFrom: resolve(pathToSnapshots, "copyFrom.jpg"),
+    copyFromSubImage: resolve(pathToSnapshots, "copyFromSubImage.jpg"),
     copyWithin: resolve(pathToSnapshots, "copyWithin.jpg"),
     copyWithinSubImage: resolve(pathToSnapshots, "copyWithinSubImage.jpg"),
 };

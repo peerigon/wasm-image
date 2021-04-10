@@ -407,24 +407,6 @@ describe("DynamicImage", () => {
     });
   });
 
-  test("copyWithin()", async () => {
-    const image = await createInstance(images.paths.catJpg);
-
-    const returned = image.copyWithin({ x: 0, y: 0, width: 100, height: 100 }, { x: 100, y: 100 });
-
-    expect(returned).toBe(true);
-    
-    const result = image.toBytes({
-      format: OutputFormat.Jpeg,
-    });
-
-    await snapshots.compare({
-      result,
-      snapshot: snapshots.paths.copyWithin,
-      updateSnapshot,
-    });
-  });
-
   test("dimensions, width, height, bounds, inBounds()", async () => {
     const image = await createInstance(images.paths.catJpg);
     const { dimensions, width, height, bounds } = image;

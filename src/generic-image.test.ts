@@ -72,7 +72,12 @@ describe("SubImage", () => {
 
   test("pixels()", async () => {
     const image = await createInstance(images.paths.catJpg);
-    const subImage = image.subImage({ x: 100, y: 100, width: 100, height: 100 });
+    const subImage = image.subImage({
+      x: 100,
+      y: 100,
+      width: 100,
+      height: 100,
+    });
     const totalPixelCount = 100 * 100;
     let i = 0;
     let pixel;
@@ -101,14 +106,86 @@ describe("SubImage", () => {
     }
   });
 
+  test("copyFrom()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const otherImage = await createInstance(images.paths.ballPng);
+
+    image.copyFrom(otherImage, { x: 50, y: 50 });
+
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.copyFrom,
+      updateSnapshot,
+    });
+  });
+
+  test("copyFrom() (subImage)", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const otherImage = await createInstance(images.paths.ballPng);
+    const subImage = otherImage.subImage({
+      x: 50,
+      y: 50,
+      width: 50,
+      height: 50,
+    });
+
+    image.copyFrom(subImage, { x: 50, y: 50 });
+
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.copyFromSubImage,
+      updateSnapshot,
+    });
+  });
+
+  test("copyFrom() (error)", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const otherImage = await createInstance(images.paths.ballPng);
+
+    expect(() =>
+      image.copyFrom(otherImage, { x: 320, y: 240 })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"The Image's dimensions are either too small or too large"`
+    );
+  });
+
   test("copyWithin()", async () => {
     const image = await createInstance(images.paths.catJpg);
-    const subImage = image.subImage({ x: 50, y: 50, width: 100, height: 100 });
 
-    const returned = subImage.copyWithin({ x: 0, y: 0, width: 100, height: 100 }, { x: 50, y: 50 });
+    const returned = image.copyWithin({ x: 0, y: 0, width: 100, height: 100 }, { x: 100, y: 100 });
 
     expect(returned).toBe(true);
     
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.copyWithin,
+      updateSnapshot,
+    });
+  });
+
+  test("copyWithin() (subImage)", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const subImage = image.subImage({ x: 50, y: 50, width: 100, height: 100 });
+
+    const returned = subImage.copyWithin(
+      { x: 0, y: 0, width: 100, height: 100 },
+      { x: 50, y: 50 }
+    );
+
+    expect(returned).toBe(true);
+
     const result = image.toBytes({
       format: OutputFormat.Jpeg,
     });
