@@ -1,4 +1,4 @@
-import { Color } from "./color";
+import { Color, ColorType } from "./color";
 import { DynamicImage, ImageFormat, OutputFormat } from "./lib";
 import { Pixel } from "./pixel";
 import * as images from "./tests/images";
@@ -64,6 +64,41 @@ describe("DynamicImage", () => {
     const image2 = await createInstance(images.paths.catJpg);
 
     expect(Buffer.compare(bytesOfImage1, image2.toBytes())).toBe(0);
+  });
+
+  test("copyAs()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const bytesOfImage = image.toBytes();
+
+    const imageCopy = image.copyAs(ColorType.L8);
+
+    expect(bytesOfImage).toMatchObject(image.toBytes());
+
+    const result = imageCopy.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.convertInto,
+      updateSnapshot,
+    });
+  });
+
+  test("convertInto()", async () => {
+    const image = await createInstance(images.paths.catJpg);
+
+    image.convertInto(ColorType.L8);
+
+    const result = image.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.convertInto,
+      updateSnapshot,
+    });
   });
 
   test("crop()", async () => {

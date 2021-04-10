@@ -9,6 +9,7 @@ import { Dimensions } from "./dimensions";
 import { $wasmDynamicImage } from "./symbols";
 import { Color, ColorType } from "./color";
 import { GenericImage } from "./generic-image";
+import { WasmDynamicImage } from "../pkg/wasm_image";
 
 /**
  * The max value that can be represented with unsigned 32 bit.
@@ -37,14 +38,24 @@ const mapOutputFormatNameToWasmImageOutputFormat = (
   return format;
 };
 
-const createWasmDynamicImage = ({ width, height, color = ColorType.Rgba8 }: Dimensions & { color?: ColorType }) => {
+const createWasmDynamicImage = ({
+  width,
+  height,
+  color = ColorType.Rgba8,
+}: Dimensions & { color?: ColorType }) => {
   return new wasm.WasmDynamicImage(color, width, height);
 };
 
-const loadWasmDynamicImageFromMemory = ({ bytes, format }: { bytes: Uint8Array; format?: ImageFormat }) => {
+const loadWasmDynamicImageFromMemory = ({
+  bytes,
+  format,
+}: {
+  bytes: Uint8Array;
+  format?: ImageFormat;
+}) => {
   return format === undefined
-  ? wasm.loadFromMemory(bytes)
-  : wasm.loadFromMemoryWithFormat(bytes, format);
+    ? wasm.loadFromMemory(bytes)
+    : wasm.loadFromMemoryWithFormat(bytes, format);
 };
 
 export type OutputFormatOptions =
@@ -109,8 +120,15 @@ export class DynamicImage extends GenericImage {
     options:
       | Parameters<typeof loadWasmDynamicImageFromMemory>[0]
       | Parameters<typeof createWasmDynamicImage>[0]
+      | WasmDynamicImage
   ) {
-    super("bytes" in options ? loadWasmDynamicImageFromMemory(options) : createWasmDynamicImage(options));
+    super(
+      options instanceof WasmDynamicImage
+        ? options
+        : "bytes" in options
+        ? loadWasmDynamicImageFromMemory(options)
+        : createWasmDynamicImage(options)
+    );
     this.#color = new Color(this[$wasmDynamicImage]);
   }
 
@@ -133,6 +151,12 @@ export class DynamicImage extends GenericImage {
         return this[$wasmDynamicImage].toFormat(format);
       }
     }
+  };
+
+  copyAs = (colorType: ColorType) => new DynamicImage(this[$wasmDynamicImage].copyAs(colorType));
+
+  convertInto = (colorType: ColorType) => {
+    this[$wasmDynamicImage] = this[$wasmDynamicImage].convertInto(colorType);
   };
 
   crop = ({

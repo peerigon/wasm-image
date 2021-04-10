@@ -5,6 +5,7 @@ const pathToSnapshots = resolve(__dirname, "snapshots");
 
 export const paths = {
     grayscaleJpg: resolve(pathToSnapshots, "grayscale.jpg"),
+    convertInto: resolve(pathToSnapshots, "convertInto.jpg"),
     croppedJpg: resolve(pathToSnapshots, "cropped.jpg"),
     invertedJpg: resolve(pathToSnapshots, "inverted.jpg"),
     resizedByWidthJpg: resolve(pathToSnapshots, "resizedByWidth.jpg"),
