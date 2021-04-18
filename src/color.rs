@@ -3,6 +3,7 @@ use image::ColorType;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
+#[derive(PartialEq)]
 pub enum WasmColorType {
     L8,
     La8,

@@ -71,7 +71,11 @@ impl WasmDynamicImage {
 
     #[wasm_bindgen(js_name = "copyAs")]
     pub fn copy_as(&self, wasm_color_type: WasmColorType) -> WasmDynamicImage {
-        let instance = match wasm_color_type {
+        WasmDynamicImage { instance: self.copy_instance_as(wasm_color_type) }
+    }
+
+    fn copy_instance_as(&self, wasm_color_type: WasmColorType) -> DynamicImage {
+        match wasm_color_type {
             WasmColorType::L8 => DynamicImage::ImageLuma8(self.instance.to_luma8()),
             WasmColorType::La8 => DynamicImage::ImageLumaA8(self.instance.to_luma_alpha8()),
             WasmColorType::Rgb8 => DynamicImage::ImageRgb8(self.instance.to_rgb8()),
@@ -82,27 +86,16 @@ impl WasmDynamicImage {
             WasmColorType::La16 => DynamicImage::ImageLumaA16(self.instance.to_luma_alpha16()),
             WasmColorType::Rgb16 => DynamicImage::ImageRgb16(self.instance.to_rgb16()),
             WasmColorType::Rgba16 => DynamicImage::ImageRgba16(self.instance.to_rgba16()),
-        };
-
-        WasmDynamicImage { instance }
+        }
     }
 
     #[wasm_bindgen(js_name = "convertInto")]
-    pub fn convert_into(mut self, wasm_color_type: WasmColorType) -> WasmDynamicImage {
-        self.instance = match wasm_color_type {
-            WasmColorType::L8 => DynamicImage::ImageLuma8(self.instance.into_luma8()),
-            WasmColorType::La8 => DynamicImage::ImageLumaA8(self.instance.into_luma_alpha8()),
-            WasmColorType::Rgb8 => DynamicImage::ImageRgb8(self.instance.into_rgb8()),
-            WasmColorType::Rgba8 => DynamicImage::ImageRgba8(self.instance.into_rgba8()),
-            WasmColorType::Bgr8 => DynamicImage::ImageBgr8(self.instance.into_bgr8()),
-            WasmColorType::Bgra8 => DynamicImage::ImageBgra8(self.instance.into_bgra8()),
-            WasmColorType::L16 => DynamicImage::ImageLuma16(self.instance.into_luma16()),
-            WasmColorType::La16 => DynamicImage::ImageLumaA16(self.instance.into_luma_alpha16()),
-            WasmColorType::Rgb16 => DynamicImage::ImageRgb16(self.instance.into_rgb16()),
-            WasmColorType::Rgba16 => DynamicImage::ImageRgba16(self.instance.into_rgba16()),
-        };
+    pub fn convert_into(&mut self, wasm_color_type: WasmColorType) {
+        if wasm_color_type == WasmColorType::from(self.instance.color()) {
+            return;
+        }
 
-        self
+        self.instance = self.copy_instance_as(wasm_color_type);
     }
 
     pub fn crop(&mut self, x: u32, y: u32, width: u32, height: u32) {

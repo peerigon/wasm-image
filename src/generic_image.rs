@@ -1,6 +1,6 @@
-use crate::WasmDynamicImage;
 use crate::errors;
-use image::{math::Rect, GenericImage, GenericImageView};
+use crate::WasmDynamicImage;
+use image::{math::Rect, DynamicImage, GenericImage, GenericImageView};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -11,8 +11,11 @@ impl WasmDynamicImage {
         source: &WasmDynamicImage,
         dest_x: u32,
         dest_y: u32,
-    ) -> Result<(), JsValue>  {
-        let result = self.instance.copy_from(&source.instance, dest_x, dest_y).map_err(errors::to_js_error)?;
+    ) -> Result<(), JsValue> {
+        let result = self
+            .instance
+            .copy_from(&source.instance, dest_x, dest_y)
+            .map_err(errors::to_js_error)?;
 
         Ok(result)
     }
@@ -27,9 +30,14 @@ impl WasmDynamicImage {
         source_height: u32,
         dest_x: u32,
         dest_y: u32,
-    ) -> Result<(), JsValue>  {
-        let source_view = source.instance.view(source_x, source_y, source_width, source_height);
-        let result = self.instance.copy_from(&source_view, dest_x, dest_y).map_err(errors::to_js_error)?;
+    ) -> Result<(), JsValue> {
+        let source_view = source
+            .instance
+            .view(source_x, source_y, source_width, source_height);
+        let result = self
+            .instance
+            .copy_from(&source_view, dest_x, dest_y)
+            .map_err(errors::to_js_error)?;
 
         Ok(result)
     }
@@ -54,5 +62,18 @@ impl WasmDynamicImage {
             dest_x,
             dest_y,
         )
+    }
+
+    #[wasm_bindgen(js_name = "genericImageToImage")]
+    pub fn generic_image_to_image(
+        &mut self,
+        x: u32,
+        y: u32,
+        width: u32,
+        height: u32,
+    ) -> WasmDynamicImage {
+        let instance = map_dynamic_image!(self.instance, ref image => image.view(x, y, width, height).to_image());
+        
+        WasmDynamicImage { instance }
     }
 }

@@ -1,4 +1,4 @@
-import { DynamicImage, OutputFormat } from "./lib";
+import { ColorType, DynamicImage, OutputFormat } from "./lib";
 import { SubImage } from "./generic-image";
 import { Pixel } from "./pixel";
 import * as images from "./tests/images";
@@ -193,6 +193,23 @@ describe("SubImage", () => {
     await snapshots.compare({
       result,
       snapshot: snapshots.paths.copyWithinSubImage,
+      updateSnapshot,
+    });
+  });
+
+  test("toImage() (subImage)", async () => {
+    const image = await createInstance(images.paths.catJpg);
+    const imageSection = image.subImage({ x: 50, y: 50, width: 100, height: 100 }).toImage();
+
+    image.convertInto(ColorType.L8);
+
+    const result = imageSection.toBytes({
+      format: OutputFormat.Jpeg,
+    });
+
+    await snapshots.compare({
+      result,
+      snapshot: snapshots.paths.toImage,
       updateSnapshot,
     });
   });

@@ -29,6 +29,7 @@ export const paths = {
     copyFromSubImage: resolve(pathToSnapshots, "copyFromSubImage.jpg"),
     copyWithin: resolve(pathToSnapshots, "copyWithin.jpg"),
     copyWithinSubImage: resolve(pathToSnapshots, "copyWithinSubImage.jpg"),
+    toImage: resolve(pathToSnapshots, "toImage.jpg"),
 };
 
 const read = async (path: string) =>

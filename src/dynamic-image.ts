@@ -156,7 +156,7 @@ export class DynamicImage extends GenericImage {
   copyAs = (colorType: ColorType) => new DynamicImage(this[$wasmDynamicImage].copyAs(colorType));
 
   convertInto = (colorType: ColorType) => {
-    this[$wasmDynamicImage] = this[$wasmDynamicImage].convertInto(colorType);
+    this[$wasmDynamicImage].convertInto(colorType);
   };
 
   crop = ({

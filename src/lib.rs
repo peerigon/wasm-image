@@ -1,3 +1,5 @@
+#[macro_use]
+mod macros;
 mod color;
 mod dynamic_image;
 mod errors;
@@ -5,8 +7,6 @@ mod filter_type;
 mod generic_image;
 mod image_format;
 mod image_output_format;
-#[macro_use]
-mod macros;
 mod pixel;
 
 use std::{convert::TryInto, io::Cursor};

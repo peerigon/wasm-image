@@ -10,6 +10,7 @@ import {
 import { WasmDynamicImage } from "./wasm";
 
 const $viewBounds = Symbol("viewBounds");
+const $toGlobalPosition = Symbol("toGlobalPosition");
 
 export class GenericImage {
   [$wasmDynamicImage]: WasmDynamicImage;
@@ -55,7 +56,7 @@ export class GenericImage {
     return { x, y, width, height };
   }
 
-  #toGlobalPosition = (position: Position): Position => {
+  [$toGlobalPosition] = (position: Position): Position => {
     const { [$viewBounds]: viewBounds } = this;
 
     if (viewBounds) {
@@ -66,7 +67,7 @@ export class GenericImage {
   };
 
   getPixel = (position: Position) => {
-    const { x, y } = this.#toGlobalPosition(position);
+    const { x, y } = this[$toGlobalPosition](position);
 
     return Pixel[$pixelConstructor](this[$wasmDynamicImage], x, y);
   };
@@ -85,7 +86,7 @@ export class GenericImage {
   }
 
   inBounds = (position: Position) => {
-    const { x, y } = this.#toGlobalPosition(position);
+    const { x, y } = this[$toGlobalPosition](position);
 
     return this[$wasmDynamicImage].inBounds(x, y);
   };
@@ -109,7 +110,7 @@ export class GenericImage {
 
   copyFrom = (sourceImage: GenericImage, target: Position) => {
     const sourceBounds = sourceImage[$viewBounds];
-    const { x: targetX, y: targetY } = this.#toGlobalPosition(target);
+    const { x: targetX, y: targetY } = this[$toGlobalPosition](target);
 
     return sourceBounds ? this[$wasmDynamicImage].genericImageCopyFromView(
       sourceImage[$wasmDynamicImage],
@@ -127,8 +128,8 @@ export class GenericImage {
   };
 
   copyWithin = (sourceBounds: Bounds, target: Position) => {
-    const { x: sourceX, y: sourceY } = this.#toGlobalPosition(sourceBounds);
-    const { x: targetX, y: targetY } = this.#toGlobalPosition(target);
+    const { x: sourceX, y: sourceY } = this[$toGlobalPosition](sourceBounds);
+    const { x: targetX, y: targetY } = this[$toGlobalPosition](target);
 
     return this[$wasmDynamicImage].genericImageCopyWithin(
       sourceX,
@@ -142,7 +143,7 @@ export class GenericImage {
 
   subImage = (bounds: Bounds) => {
     const { width, height } = bounds;
-    const { x, y } = this.#toGlobalPosition(bounds);
+    const { x, y } = this[$toGlobalPosition](bounds);
 
     return new GenericSubImage(this[$wasmDynamicImage], {
       x,
@@ -154,12 +155,21 @@ export class GenericImage {
 }
 
 class GenericSubImage extends GenericImage {
+  [$viewBounds]: Bounds;
+
   set bounds(bounds: Bounds) {
     this[$viewBounds] = bounds;
   }
 
   toImage = () => {
-    // TODO: Implement
+    const { x, y,  width, height } = this[$viewBounds];
+
+    return new DynamicImage(this[$wasmDynamicImage].genericImageToImage(
+      x,
+      y,
+      width,
+      height,
+    ));
   };
 }
 
