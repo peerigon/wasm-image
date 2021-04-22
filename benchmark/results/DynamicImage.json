@@ -1,0 +1,33 @@
+{
+  "name": "DynamicImage",
+  "date": "2021-04-22T12:31:41.709Z",
+  "version": null,
+  "results": [
+    {
+      "name": "Load image",
+      "ops": 128,
+      "margin": 0.45,
+      "percentSlower": 0
+    },
+    {
+      "name": "Transform image",
+      "ops": 36,
+      "margin": 0.44,
+      "percentSlower": 71.88
+    },
+    {
+      "name": "Save and dispose image",
+      "ops": 113,
+      "margin": 0.34,
+      "percentSlower": 11.72
+    }
+  ],
+  "fastest": {
+    "name": "Load image",
+    "index": 0
+  },
+  "slowest": {
+    "name": "Transform image",
+    "index": 1
+  }
+}
