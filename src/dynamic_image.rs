@@ -1,3 +1,4 @@
+use crate::utils::set_panic_hook;
 use crate::color::WasmColorType;
 use crate::errors;
 use crate::filter_type::WasmImageFilterType;
@@ -22,6 +23,8 @@ pub(crate) fn new(instance: DynamicImage) -> WasmDynamicImage {
 impl WasmDynamicImage {
     #[wasm_bindgen(constructor)]
     pub fn new(color: WasmColorType, width: u32, height: u32) -> WasmDynamicImage {
+        set_panic_hook();
+        
         let instance = match color {
             WasmColorType::L8 => DynamicImage::new_luma8(width, height),
             WasmColorType::La8 => DynamicImage::new_luma_a8(width, height),

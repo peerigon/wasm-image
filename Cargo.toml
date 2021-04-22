@@ -7,39 +7,41 @@ name = "wasm-image"
 repository = "https://github.com/peerigon/wasm-image"
 version = "1.0.0"
 
-# Currently necessary because of https://github.com/rustwasm/wasm-pack/issues/886
-[package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-Oz", "--enable-mutable-globals"]
-
 [lib]
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["console_error_panic_hook"]
+full = ["image/png", "image/jpeg", "image/gif", "image/webp", "image/tiff", "image/bmp", "image/ico", "image/avif"]
+min = ["image/png", "image/jpeg", "image/gif", "image/bmp"]
+dev = ["console_error_panic_hook"]
 
 [dependencies]
-image = {version = "0.23.12", default-features = false, features = ["png", "jpeg", "gif", "webp", "tiff", "bmp", "ico", "avif"]}
-js-sys = "0.3.49"
-wasm-bindgen = "0.2.69"
+image = {version = "0.23", default-features = false }
+js-sys = "0.3"
+wasm-bindgen = "0.2"
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
 # all the `std::fmt` and `std::panicking` infrastructure, so isn't great for
 # code size when deploying.
-console_error_panic_hook = {version = "0.1.6", optional = true}
+console_error_panic_hook = {version = "0.1", optional = true}
 
-web-sys = {version = "0.3.49", features = ["console"]}
+web-sys = {version = "0.3", features = ["console"], optional = true}
 
 # `wee_alloc` is a tiny allocator for wasm that is only ~1K in code size
 # compared to the default allocator's ~10K. It is slower than the default
 # allocator, however.
 #
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
-wee_alloc = {version = "0.4.5", optional = true}
+wee_alloc = {version = "0.4", optional = true}
 
 [dev-dependencies]
-wasm-bindgen-test = "0.3.13"
+wasm-bindgen-test = "0.3"
 
 [profile.release]
 # Tell `rustc` to optimize for small code size.
-opt-level = "s"
+opt-level = "s" # "z" produced the same code size but worse runtime performance
+lto = true
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz"] # Use "g" flag to get symbol names

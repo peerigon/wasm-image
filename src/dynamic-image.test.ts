@@ -284,7 +284,7 @@ describe("DynamicImage", () => {
   test("unsharpen()", async () => {
     const image = await createInstance(images.paths.catJpg);
 
-    image.unsharpen(3, 20);
+    image.unsharpen({ sigma: 3, threshold: 20 });
 
     const result = image.toBytes({
       format: OutputFormat.Jpeg,
@@ -492,5 +492,23 @@ describe("DynamicImage", () => {
       expect(pixel.x).toBe(319);
       expect(pixel.y).toBe(239);
     }
+  });
+
+  test("dispose() is callable twice without error", async () => {
+    const image = await createInstance(images.paths.catJpg);
+
+    // Should be callable twice without error
+    image.dispose();
+    image.dispose();
+  });
+
+  test("dispose() makes the image unusable afterwards", async () => {
+    const image = await createInstance(images.paths.catJpg);
+
+    image.dispose();
+
+    expect(() => image.rotate180()).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot read property 'rotate180' of null"`
+    );
   });
 });

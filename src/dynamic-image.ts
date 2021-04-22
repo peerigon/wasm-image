@@ -1,6 +1,8 @@
 // TODO: Hint https://stackoverflow.com/questions/51544240/how-can-i-free-memory-allocated-by-rust-code-exposed-in-webassembly
 // TODO: Rename DynamicImage to Image?
 // TODO: Decrease file size
+// TODO: Jpeg output?
+// TODO: [package.metadata.wasm-pack.profile.release] wasm-opt = ['-Os'] or -Oz
 // TODO: Throw on negative x, y
 
 import * as wasm from "./wasm";
@@ -205,7 +207,7 @@ export class DynamicImage extends GenericImage {
     this[$wasmDynamicImage].blur(sigma);
   };
 
-  unsharpen = (sigma: number, threshold: number) => {
+  unsharpen = ({ sigma, threshold }: {sigma: number, threshold: number}) => {
     this[$wasmDynamicImage].unsharpen(sigma, threshold);
   };
 
@@ -246,6 +248,13 @@ export class DynamicImage extends GenericImage {
   };
 
   dispose = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (this[$wasmDynamicImage] === null) {
+      // This instance has already been disposed
+      return;
+    }
     this[$wasmDynamicImage].free();
+    // @ts-expect-error We don't want to type this property as nullable because dispose() is a special case
+    this[$wasmDynamicImage] = null;
   };
 }
